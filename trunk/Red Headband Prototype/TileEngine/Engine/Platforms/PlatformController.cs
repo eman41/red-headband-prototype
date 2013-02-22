@@ -1,4 +1,9 @@
-﻿namespace TileEngine.Engine.Platforms
+﻿// -----------------------------------------------------------------------
+// <copyright file="PlatformController.cs" company="" />
+// Author: Eric S. Policaro
+// Handles the movement, speed, and location of a platform
+// -----------------------------------------------------------------------
+namespace TileEngine.Engine.Platforms
 {
     using System;
     using Microsoft.Xna.Framework;
@@ -8,16 +13,27 @@
     {
         private Vector2 _start = Vector2.Zero;
         private Vector2 _stop = Vector2.Zero;
-        private bool _oneTime = false;
-        private bool _onHold = false;
-        private bool _permaHold = false;
-        private TimeSpan _holdElapsed = TimeSpan.Zero;
-        private TimeSpan _holdTime = TimeSpan.Zero;
 
+        private bool _oneTime = false;   // Platform will move once
+        private bool _permaHold = false; // Hold until Reset()
+        private bool _onHold = false;    // Platform being held at an endpoint
+        
+        // Hold Trackers
+        private Vector2 _heldVelocity = Vector2.Zero;
+        private TimeSpan _holdElapsed = TimeSpan.Zero;
+        private TimeSpan _maxHoldDuration = TimeSpan.Zero;
+
+        /// <summary>
+        /// Initializes a new platform controller.
+        /// </summary>
+        /// <param name="start">Starting Tile Position</param>
+        /// <param name="stop">End Tile Position</param>
+        /// <param name="speed">Platform speed</param>
+        /// <param name="holdTime">Length of time the platform spends at endpoints</param>
+        /// <param name="oneTime">True: Platform only moves once (Default is false)</param>
         public PlatformController(Vector2 start, Vector2 stop, float speed, TimeSpan holdTime, bool oneTime = false)
         {
-            Speed = speed;
-            _holdTime = holdTime;
+            _maxHoldDuration = holdTime;
             _oneTime = oneTime;
 
             _start = new Vector2(start.X * GameMap.TILE_SIZE, start.Y * GameMap.TILE_SIZE);
@@ -31,8 +47,10 @@
 
         public Vector2 Position { get; set; }
         public Vector2 Velocity { get; private set; }
-        public float Speed { get; set; }
 
+        /// <summary>
+        /// Reset this entity to it's starting state
+        /// </summary>
         public void Reset()
         {
             _onHold = false;
@@ -41,40 +59,72 @@
             _holdElapsed = TimeSpan.Zero;
         }
 
-        Vector2 _holdnormal = Vector2.Zero;
+        /// <summary>
+        /// Update the state of the platform.
+        /// </summary>
+        /// <param name="gameTime">Current Game time</param>
         public virtual void Update(GameTime gameTime)
         {
             if (_onHold)
             {
-                if ((_holdElapsed += gameTime.ElapsedGameTime) > _holdTime)
+                if (holdDurationExceeded(gameTime))
                 {
-                    _onHold = false;
-                    _holdElapsed = TimeSpan.Zero;
-                    Velocity = -1 * _holdnormal;
-                    Position += Velocity;
+                    releaseAndReverseDirection();
                 }
                 else
                 {
-                    if (isCloserToStart())
-                    {
-                        Position = _start;
-                    }
-                    else
-                    {
-                        Position = _stop;
-                        _permaHold = _oneTime;
-                    }
-                    Velocity = Vector2.Zero;
+                    clampToNearestEndpoint();
                 }
             }
-            else if (betweenEndPoints())
+            else if (outsideEndPoints())
             {
-                _onHold = true;
-                _holdnormal = Velocity;
-                Velocity.Normalize();
-                Velocity = Vector2.Zero;
+                holdPlatform();
             }
 
+            updatePosition();
+        }
+
+        private bool holdDurationExceeded(GameTime gameTime)
+        {
+            return (_holdElapsed += gameTime.ElapsedGameTime) > _maxHoldDuration;
+        }
+
+        private void releaseAndReverseDirection()
+        {
+            _onHold = false;
+            _holdElapsed = TimeSpan.Zero;
+            Velocity = -1 * _heldVelocity;
+            Position += Velocity;
+        }
+
+        private void clampToNearestEndpoint()
+        {
+            Velocity = Vector2.Zero;
+            if (isCloserToStart())
+            {
+                Position = _start;
+            }
+            else
+            {
+                Position = _stop;
+                _permaHold = _oneTime;
+            }
+        }
+
+        private bool isCloserToStart()
+        {
+            return Vector2.Distance(_start, Position) < Vector2.Distance(_stop, Position);
+        }
+
+        private void holdPlatform()
+        {
+            _onHold = true;
+            _heldVelocity = Velocity;
+            Velocity = Vector2.Zero;
+        }
+
+        private void updatePosition()
+        {
             if (_permaHold)
             {
                 Position = _stop;
@@ -86,17 +136,12 @@
             }
         }
 
-        private bool isCloserToStart()
-        {
-            return Vector2.Distance(_start, Position) < Vector2.Distance(_stop, Position);
-        }
-
-        private bool betweenEndPoints()
+        private bool outsideEndPoints()
         {
             return !PointBetween(_start, _stop, Position + Velocity);
         }
 
-        public static bool PointBetween(Vector2 p1, Vector2 p2, Vector2 pos)
+        private bool PointBetween(Vector2 p1, Vector2 p2, Vector2 pos)
         {
             float xMin = Math.Min(p1.X, p2.X);
             float yMin = Math.Min(p1.Y, p2.Y);

@@ -126,6 +126,7 @@
   <ItemGroup>
     <Content Include="XML\HudData.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Content>
     <Content Include="XML\PlayerSpriteData.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
