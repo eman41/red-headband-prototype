@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<animations>
+	<sheet path = "Sprites/player-sprite-sheet"/>
+	<animation name="stand" oneshot ="false">
+		<frames>5</frames>
+		<spacing>2</spacing>
+		<interval>500</interval>
+		<rectangle x = "1" y = "0" w = "21" h = "24" />
+	</animation>
+	
+	<animation name="stand-shoot" oneshot ="false">
+		<frames>1</frames>
+		<spacing>0</spacing>
+		<interval>200</interval>
+		<rectangle x = "105" y = "81" w = "21" h = "24" />
+	</animation>
+	
+	<animation name="run" oneshot ="false">
+		<frames>4</frames>
+		<spacing>2</spacing>
+		<interval>110</interval>
+		<rectangle x = "1" y = "25" w = "21" h = "24" />
+	</animation>
+	
+	<animation name="run-shoot" oneshot ="false">
+		<frames>4</frames>
+		<spacing>2</spacing>
+		<interval>120</interval>
+		<rectangle x = "1" y = "81" w = "24" h = "24" />
+	</animation>
+	
+	<animation name="jump" oneshot ="false">
+		<frames>1</frames>
+		<spacing>0</spacing>
+		<interval>0</interval>
+		<rectangle x = "0" y = "50" w = "21" h = "30" />
+	</animation>
+	
+	<animation name="jump-shoot" oneshot ="false">
+		<frames>1</frames>
+		<spacing>0</spacing>
+		<interval>0</interval>
+		<rectangle x = "23" y = "50" w = "21" h = "30" />
+	</animation>
+	
+	<animation name="wallslide" oneshot ="false">
+		<frames>1</frames>
+		<spacing>0</spacing>
+		<interval>0</interval>
+		<rectangle x = "93" y = "25" w = "21" h = "24" />
+	</animation>
+	
+	<animation name="wallslide-shoot" oneshot ="false">
+		<frames>1</frames>
+		<spacing>0</spacing>
+		<interval>0</interval>
+		<rectangle x = "105" y = "50" w = "21" h = "24" />
+	</animation>
+	
+	<animation name="climb" oneshot ="false">
+		<frames>1</frames>
+		<spacing>0</spacing>
+		<interval>0</interval>
+		<rectangle x = "1" y = "107" w = "18" h = "29" />
+	</animation>
+	
+	<animation name="climbing" oneshot ="false">
+		<frames>2</frames>
+		<spacing>0</spacing>
+		<interval>200</interval>
+		<rectangle x = "1" y = "107" w = "18" h = "29" />
+	</animation>
+	
+	<animation name="climb-shoot" oneshot ="false">
+		<frames>1</frames>
+		<spacing>0</spacing>
+		<interval>0</interval>
+		<rectangle x = "74" y = "107" w = "18" h = "29" />
+	</animation>
+	
+	<animation name="climb-finish" oneshot ="false">
+		<frames>1</frames>
+		<spacing>0</spacing>
+		<interval>0</interval>
+		<rectangle x = "93" y = "107" w = "18" h = "29" />
+	</animation>
+	
+	<animation name="hit" oneshot ="false">
+		<frames>2</frames>
+		<spacing>2</spacing>
+		<interval>50</interval>
+		<rectangle x = "46" y = "51" w = "26" h = "26" />
+	</animation>
+	
+	<animation name="death" oneshot ="true">
+		<frames>4</frames>
+		<spacing>2</spacing>
+		<interval>175</interval>
+		<rectangle x = "1" y = "137" w = "27" h = "24" />
+	</animation>
+</animations>

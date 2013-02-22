@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<interface>
+	<sheet path = "GUI/hud-sheet"/>
+	<healthbar-frame>
+		<rectangle x = "0" y = "0" w = "300" h = "20" />
+	</healthbar-frame>
+	<healthbar-fill>
+		<rectangle x = "0" y = "20" w = "300" h = "20" />
+	</healthbar-fill>
+</interface>
