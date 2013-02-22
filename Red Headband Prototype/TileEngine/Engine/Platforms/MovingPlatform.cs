@@ -1,9 +1,9 @@
-﻿namespace TileEngine.Engine.Platforms
+﻿// -----------------------------------------------------------------------
+// <copyright file="MovingPlatform.cs" company="" />
+// Author: Eric S. Policaro
+// -----------------------------------------------------------------------
+namespace TileEngine.Engine.Platforms
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using Microsoft.Xna.Framework;
     using Microsoft.Xna.Framework.Graphics;
     using TileEngine.Engine;
@@ -14,20 +14,20 @@
         private Rectangle _draw;
         private Texture2D _elevatorSheet;
         protected PlatformController _controller;
-        private bool _sleeping;
+        private bool _sleeping = true;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MovingPlatform"/> class.
+        /// All platforms are initialized in a sleeping state.
         /// </summary>
-        /// <param name="sheet">Reference to the texture sheet for platform objects.</param>
-        /// <param name="controller">Reference to controller assigned to this platform</param>
+        /// <param name="sheet">Texture sheet for platform objects.</param>
+        /// <param name="controller">Controller for this platform</param>
         /// <param name="draw">Draw rectangle for the texture sheet (also used in bounding box calculations).</param>
-        public MovingPlatform(Texture2D sheet, PlatformController controller,Rectangle draw)
+        public MovingPlatform(Texture2D sheet, PlatformController controller, Rectangle draw)
         {
             _elevatorSheet = sheet;
             _draw = draw;
             _controller = controller;
-            _sleeping = true;
         }
 
         public bool IsSleeping
