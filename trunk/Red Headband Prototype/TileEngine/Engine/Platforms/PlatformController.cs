@@ -36,7 +36,7 @@ namespace TileEngine.Engine.Platforms
             _stop = translateToPixelCoords(stop);
 
             Position = _start;
-            Velocity = getStartingVelocity(start, stop, speed);
+            Velocity = getStartVelocity(start, stop, speed);
         }
 
         private Vector2 translateToPixelCoords(Vector2 levelCoords)
@@ -46,7 +46,7 @@ namespace TileEngine.Engine.Platforms
             return new Vector2(x, y);
         }
 
-        private Vector2 getStartingVelocity(Vector2 start, Vector2 stop, float speed)
+        private Vector2 getStartVelocity(Vector2 start, Vector2 stop, float speed)
         {
             Vector2 moveNormal = new Vector2(start.X - stop.X, start.Y - stop.Y);
             moveNormal.Normalize();
