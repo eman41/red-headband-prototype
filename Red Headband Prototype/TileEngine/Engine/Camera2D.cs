@@ -1,16 +1,19 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="Camera2D.cs" company="" />
+// <copyright file="Camera2D.cs" company="Me" />
 // Author: Eric S. Policaro
+// Standard orthographic camera.
+// Features:
+//      -- Locked to viewport
+//      -- Can be locked in any direction
+//      -- Contains a queue that can be used to hold the camera
+//         after it passes a certain point
+// Code basis and inspiration from:
+// http://www.david-amador.com/2009/10/xna-camera-2d-with-zoom-and-rotation/
 // -----------------------------------------------------------------------
 namespace TileEngine.Engine
 {
     using Microsoft.Xna.Framework;
     using System.Collections.Generic;
-
-    public enum CameraLock
-    {
-        None, Horizontal, Vertical, Both
-    }
 
     public class Camera2D
     {
@@ -21,18 +24,24 @@ namespace TileEngine.Engine
 
         public Camera2D()
         {
-        }
-
-        public Camera2D(float viewWidth, float viewHeight)
-        {
             _zoom = 1.0f;
             Rotation = 0.0f;
             _position = Vector2.Zero;
+            Parallax = Vector2.One;
+            HoldPositions = new Queue<int>();
+        }
+
+        public Camera2D(float viewWidth, float viewHeight) 
+            : this()
+        {
             _viewPortWidth = viewWidth;
             _viewPortHeight = viewHeight;
-            Parallax = Vector2.One;
             Origin = new Vector2(_viewPortWidth / 2.0f, _viewPortHeight / 2.0f);
-            HoldPositions = new Queue<int>();
+        }
+
+        public bool hasHoldPositions()
+        {
+            return HoldPositions.Count > 0;
         }
 
         public CameraLock LockStatus { get; set; }
@@ -41,11 +50,6 @@ namespace TileEngine.Engine
         public Vector2 Parallax { get; set; }
         public Vector2 Origin { get; set; }
         public Queue<int> HoldPositions { get; set;}
-
-        public bool hasHoldPositions()
-        {
-            return HoldPositions.Count > 0;
-        }
 
         public float Zoom
         {
@@ -59,20 +63,6 @@ namespace TileEngine.Engine
             }
         }
 
-        private void ValidatePosition()
-        {
-            if (Limits.HasValue)
-            {
-                Vector2 cameraWorldMin = Vector2.Transform(Vector2.Zero, Matrix.Invert(Transform));
-                Vector2 cameraSize = new Vector2(_viewPortWidth, _viewPortHeight) / _zoom;
-                Vector2 limitWorldMin = new Vector2(Limits.Value.Left, Limits.Value.Top);
-                Vector2 limitWorldMax = new Vector2(Limits.Value.Right, Limits.Value.Bottom);
-                Vector2 positionOffset = _position - cameraWorldMin;
-                //positionOffset.X -= Limits.Value.Left;
-                _position = Vector2.Clamp(cameraWorldMin, limitWorldMin, limitWorldMax - cameraSize) + positionOffset;
-            }
-        }
-
         private void ValidateZoom()
         {
             if (Limits.HasValue)
@@ -82,6 +72,21 @@ namespace TileEngine.Engine
                 _zoom = MathHelper.Max(_zoom, MathHelper.Max(minZoomX, minZoomY));
             }
         }
+
+        public Matrix Transform
+        {
+            get
+            {
+                Vector3 translation = new Vector3(_viewPortWidth * 0.5f, _viewPortHeight * 0.5f, 0);
+                Vector3 zoomVector = new Vector3(Zoom, Zoom, 1);
+                return
+                    Matrix.CreateTranslation(
+                        new Vector3(-_position * Parallax, 0))
+                        * Matrix.CreateRotationZ(Rotation)
+                        * Matrix.CreateScale(zoomVector)
+                        * Matrix.CreateTranslation(translation);
+            }
+        }  
 
         // Get or set the position taking into account the camera lock
         public Vector2 FocusVector
@@ -112,51 +117,23 @@ namespace TileEngine.Engine
             }
         }
 
-        public Vector2 WorldToScreen(Vector2 worldPosition)
+        private void ValidatePosition()
         {
-            return Vector2.Transform(worldPosition, Transform);
-        }
-
-        public Vector2 ScreenToWorld(Vector2 screenPosition)
-        {
-            return Vector2.Transform(screenPosition, Matrix.Invert(Transform));
-        }
-
-        // Auxiliary function to move the camera taking into account the camera lock
-        public void Move(Vector2 amount)
-        {
-            switch (LockStatus)
+            if (Limits.HasValue)
             {
-                case CameraLock.None:
-                    _position += amount;
-                    break;
-                case CameraLock.Horizontal:
-                    _position.Y += amount.Y;
-                    break;
-                case CameraLock.Vertical:
-                    _position.X += amount.X;
-                    break;
-                case CameraLock.Both:
-                    break;
-                default:
-                    _position += amount;
-                    break;
+                Vector2 cameraWorldMin = Vector2.Transform(Vector2.Zero, Matrix.Invert(Transform));
+                Vector2 cameraSize = new Vector2(_viewPortWidth, _viewPortHeight) / _zoom;
+                Vector2 limitWorldMin = new Vector2(Limits.Value.Left, Limits.Value.Top);
+                Vector2 limitWorldMax = new Vector2(Limits.Value.Right, Limits.Value.Bottom);
+                Vector2 positionOffset = _position - cameraWorldMin;
+                _position = Vector2.Clamp(cameraWorldMin, limitWorldMin, limitWorldMax - cameraSize)
+                    + positionOffset;
             }
         }
+    }
 
-        public Matrix Transform
-        {
-            get
-            {
-                Vector3 translation = new Vector3(_viewPortWidth * 0.5f, _viewPortHeight * 0.5f, 0);
-                Vector3 zoomVector = new Vector3(Zoom, Zoom, 1);
-                return
-                    Matrix.CreateTranslation(
-                        new Vector3(-_position * Parallax, 0)) 
-                        * Matrix.CreateRotationZ(Rotation) 
-                        * Matrix.CreateScale(zoomVector) 
-                        * Matrix.CreateTranslation(translation);
-            }
-        }   
+    public enum CameraLock
+    {
+        None, Horizontal, Vertical, Both
     }
 }
