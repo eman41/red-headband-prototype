@@ -127,7 +127,9 @@ namespace TileEngine.Engine.Platforms
 
         private bool isCloserToStart()
         {
-            return Vector2.Distance(_start, Position) < Vector2.Distance(_stop, Position);
+            float distanceToStart = Vector2.Distance(_start, Position);
+            float distanceToEnd = Vector2.Distance(_stop, Position);
+            return distanceToStart < distanceToEnd;
         }
 
         private void holdPlatform()
