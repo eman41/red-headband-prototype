@@ -32,8 +32,8 @@ namespace TileEngine.Engine
             _type = TileType.Empty;
         }
 
-        public TileObject(Vector2 position, Rectangle bounds, Rectangle draw, bool active, TileType type)
-            : base(position, bounds, Vector2.Zero, active)
+        public TileObject(Vector2 position, Rectangle bounds, Rectangle draw, TileType type)
+            : base(position, bounds, Vector2.Zero, true)
         {
             _type = type;
             _drawRect = draw;
@@ -51,6 +51,10 @@ namespace TileEngine.Engine
             get
             {
                 return _type;
+            }
+            set
+            {
+                _type = value;
             }
         }
 

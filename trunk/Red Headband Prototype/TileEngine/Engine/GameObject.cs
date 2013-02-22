@@ -1,4 +1,9 @@
-﻿namespace TileEngine.Engine
+﻿// -----------------------------------------------------------------------
+// <copyright file="GameObject.cs" company="Me" />
+// Author: Eric S. Policaro
+// A drawable entity with bounding box (full sprite options included).
+// -----------------------------------------------------------------------
+namespace TileEngine.Engine
 {
     using System;
     using Microsoft.Xna.Framework;
