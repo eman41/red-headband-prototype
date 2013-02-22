@@ -20,7 +20,7 @@ namespace TileEngine.Engine
         private Texture2D _tileSheet;
         private TileObject[,] _tileMap;
         private List<GameObject> saveLadders;
-        private Dictionary<int, Rectangle> _tileDrawRects = new Dictionary<int, Rectangle>();
+        private Dictionary<int, Rectangle> _tileDrawRects;
 
         private GameMap()
         {
@@ -31,6 +31,7 @@ namespace TileEngine.Engine
             Platforms = new List<MovingPlatform>();
             KillRects = new List<Rectangle>();
             saveLadders = new List<GameObject>();
+            _tileDrawRects = new Dictionary<int, Rectangle>();
         }
 
         public GameMap(string levelName, string path, Texture2D tileSheet)
@@ -84,12 +85,11 @@ namespace TileEngine.Engine
                 Convert.ToInt32(rgbTokens[1]),
                 Convert.ToInt32(rgbTokens[2]));
             _tileMap = new TileObject[LevelHeight, LevelWidth];
-            _tileDrawRects = CreateTileDrawRects(_tileSheet, TILE_SIZE, 34);
+            CreateTileDrawRects(_tileSheet, TILE_SIZE, 34);
         }
 
-        private Dictionary<int, Rectangle> CreateTileDrawRects(Texture2D tileset, int tileSize, int tileWidth)
+        private void CreateTileDrawRects(Texture2D tileset, int tileSize, int tileWidth)
         {
-            Dictionary<int, Rectangle> result = new Dictionary<int, Rectangle>();
             int count = 1;
             int offset = Convert.ToInt32((tileWidth - tileSize) * 0.5f);
             int x = tileset.Width / tileSize;
@@ -102,12 +102,10 @@ namespace TileEngine.Engine
                         j * tileWidth + offset,
                         i * tileWidth + offset,
                         tileSize, tileSize);
-                    result.Add(count, rect);
+                    _tileDrawRects.Add(count, rect);
                     count++;
                 }
             }
-
-            return result;
         }
 
         private TileObject createNewTile(int posX, int posY, string[] tokens)
