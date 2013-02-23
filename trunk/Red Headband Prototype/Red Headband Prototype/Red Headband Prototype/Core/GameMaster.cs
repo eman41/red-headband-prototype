@@ -190,7 +190,7 @@ namespace Red_Headband_Prototype.Core
             {
                 _playerOne.Update(gameTime);
                 CurrentLevel.Update(gameTime);
-                if (playerBelowScreen())
+                if (PlayerBelowScreen())
                 {
                     _playerOne.KillPlayer();
                     _activeCamera.LockStatus = CameraLock.Both;
@@ -203,24 +203,24 @@ namespace Red_Headband_Prototype.Core
             }
         }
 
-        private static bool playerBelowScreen()
+        private static bool PlayerBelowScreen()
         {
             return _playerOne.Position.Y > CurrentLevel.RealLevelHeight;
         }
 
         private void CheckPause(GamePadState currentState, GameTime gameTime)
         {
-            if (canChangePause())
+            if (CanChangePause())
             {
-                togglePause(currentState, gameTime);
+                TogglePause(currentState, gameTime);
             }
             else
             {
-                updatePauseDelay(currentState, gameTime);
+                UpdatePauseDelay(currentState, gameTime);
             }
         }
 
-        private void togglePause(GamePadState currentState, GameTime gameTime)
+        private void TogglePause(GamePadState currentState, GameTime gameTime)
         {
             if (InputUtility.ButtonToggled(_lastState, currentState, Buttons.Start))
             {
@@ -229,15 +229,15 @@ namespace Red_Headband_Prototype.Core
             }
         }
 
-        private void updatePauseDelay(GamePadState currentState, GameTime gameTime)
+        private void UpdatePauseDelay(GamePadState currentState, GameTime gameTime)
         {
             _pauseDelay += (currentState.Buttons.Start == ButtonState.Released)
                             ? gameTime.ElapsedGameTime
                             : TimeSpan.Zero;
-            tryResetPause();
+            TryResetPause();
         }
 
-        private void tryResetPause()
+        private void TryResetPause()
         {
             if (_pauseDelay > TimeSpan.FromMilliseconds(50))
             {
@@ -245,16 +245,16 @@ namespace Red_Headband_Prototype.Core
             }
         }
 
-        private bool canChangePause()
+        private bool CanChangePause()
         {
             return _pauseDelay == TimeSpan.Zero;
         }
 
         private void UpdateCamera(Camera2D camera, Vector2 playerPos)
         {
-            if (camera.hasHoldPositions() && (playerPos.X > nextHoldPosition(camera)))
+            if (camera.hasHoldPositions() && (playerPos.X > NextHoldPosition(camera)))
             {
-                int holdFactor = createHoldFactor(camera);
+                int holdFactor = CreateHoldFactor(camera);
                 camera.Limits = new Rectangle(
                     holdFactor, 0, 
                     (int)CurrentLevel.RealLevelWidth - holdFactor, 
@@ -265,12 +265,12 @@ namespace Red_Headband_Prototype.Core
             camera.FocusVector = playerPos;
         }
 
-        private static int createHoldFactor(Camera2D camera)
+        private static int CreateHoldFactor(Camera2D camera)
         {
             return camera.HoldPositions.Dequeue() * GameMap.TILE_SIZE;
         }
 
-        private static int nextHoldPosition(Camera2D camera)
+        private static int NextHoldPosition(Camera2D camera)
         {
             return (camera.HoldPositions.Peek() + GameMaster.VIEWPORT_WIDTH_TILE / 4) 
                     * GameMap.TILE_SIZE;
@@ -292,11 +292,11 @@ namespace Red_Headband_Prototype.Core
             
             _spriteBatch.Begin();
             _hudComponent.Draw(gameTime, _spriteBatch);
-            _spriteBatch.DrawString(debugFont, playerStatsString(), new Vector2(5, 5), Color.Black);
+            _spriteBatch.DrawString(debugFont, PlayerStatsString(), new Vector2(5, 5), Color.Black);
             _spriteBatch.End();
         }
 
-        private static string playerStatsString()
+        private static string PlayerStatsString()
         {
             return _playerOne.Velocity.ToString() + "\r\n" + _playerOne.Position;
         }
