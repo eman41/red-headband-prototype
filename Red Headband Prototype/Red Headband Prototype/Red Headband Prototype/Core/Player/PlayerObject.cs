@@ -60,7 +60,7 @@
         public void AdjustHealthFixed(int amount)
         {
             // Don't allow hits during the shield
-            if (amount >= 0 || notShielded(amount))
+            if (amount >= 0 || NotShielded(amount))
             {
                 _currentHP += amount;    
             }
@@ -72,7 +72,7 @@
             }
         }
 
-        private bool notShielded(int amount)
+        private bool NotShielded(int amount)
         {
             return (amount < 0 && !GotHit);
         }

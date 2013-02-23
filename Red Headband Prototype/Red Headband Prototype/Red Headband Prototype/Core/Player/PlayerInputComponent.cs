@@ -33,14 +33,14 @@
 
             if (!player.IsAlive)
             {
-                resetJumping(player);
+                ResetJumping(player);
                 velocity.Y = applyGravity(player, velocity.Y);
             }
             else if (player.GotHit) 
             {
                 velocity.X = player.IsFacingLeft ? 1f : -1f;
                 velocity.Y = applyGravity(player, velocity.Y);
-                resetJumping(player);
+                ResetJumping(player);
 
                 if ((_shieldElapsed += gameTime.ElapsedGameTime) > _afterHitShield)
                 {
@@ -50,7 +50,7 @@
             }
             else
             {
-                setPlayerDirection(player, _state.ThumbSticks);
+                SetPlayerDirection(player, _state.ThumbSticks);
                 if (Math.Abs(_state.ThumbSticks.Left.X) > STICK_THRESHOLD)
                 {
                     velocity.X = PlayerObject.PLAYER_SPEED * _state.ThumbSticks.Left.X;
@@ -63,11 +63,11 @@
 
                 if (player.IsWallJumping)
                 {
-                    velocity = pollWallJump(player, velocity.X, gameTime);
+                    velocity = PollWallJump(player, velocity.X, gameTime);
                 }
                 else if (player.IsJumping)
                 {
-                    velocity = pollJump(player, velocity.X, gameTime);
+                    velocity = PollJump(player, velocity.X, gameTime);
                 }
 
                 attemptJump(player);
@@ -76,11 +76,11 @@
             
             // Dead bodies always fall very fast
             player.Velocity = (player.IsAlive && !player.GotHit)
-                                ? applySlideCoeff(velocity, player.IsSliding) 
+                                ? ApplySlideCoeff(velocity, player.IsSliding) 
                                 : velocity;
         }
 
-        private Vector2 applySlideCoeff(Vector2 velocity, bool isSliding)
+        private Vector2 ApplySlideCoeff(Vector2 velocity, bool isSliding)
         {
             if (isSliding)
             {
@@ -94,7 +94,7 @@
 
         private float applyGravity(PlayerObject player, float yVelocity)
         {
-            if (onTheGround(player)) // Player in a gravity affected state
+            if (OnTheGround(player)) // Player in a gravity affected state
             {
                 return GameMaster.CurrentLevel.Gravity;
             }
@@ -102,7 +102,7 @@
             return yVelocity;
         }
 
-        private bool onTheGround(PlayerObject player)
+        private bool OnTheGround(PlayerObject player)
         {
             return !player.IsJumping && !player.OnLadder && !player.IsWallJumping;
         }
@@ -127,11 +127,11 @@
             }
             else
             {
-                resetJumping(player);
+                ResetJumping(player);
             }
         }
 
-        private Vector2 pollJump(PlayerObject player, float xStart, GameTime gameTime)
+        private Vector2 PollJump(PlayerObject player, float xStart, GameTime gameTime)
         {
             Vector2 result = new Vector2(xStart, PlayerObject.PLAYER_JUMP_SPEED);
             if ((_jumpElapsed += gameTime.ElapsedGameTime) > _jumpFinish)
@@ -143,51 +143,62 @@
             return result;
         }
 
-        private Vector2 pollWallJump(PlayerObject player, float xStart, GameTime gameTime)
+        private Vector2 PollWallJump(PlayerObject player, float xStart, GameTime gameTime)
         {
-            Vector2 result = new Vector2(xStart, 0f);
-
-            if (_wallJumpElapsed < _wallJumpPropel)
-            {
-                if (player.State == _slideStart)
-                {
-                    result.X = player.State == PlayerState.WallSlideL ? PlayerObject.PLAYER_SPEED : -PlayerObject.PLAYER_SPEED;
-                }
-                else
-                {
-                    result.X = 0f;
-                }
-            }
-            else
-            {
-                if (_state.ThumbSticks.Left.X == 0 && player.State == _slideStart)
-                {
-                    result.X = player.State == PlayerState.WallSlideL ? PlayerObject.PLAYER_SPEED : -PlayerObject.PLAYER_SPEED;
-                }
-                else if (player.IsSliding)
-                {
-                    result.X = 0f;
-                }
-            }
-                
+            Vector2 result = new Vector2();
+            result.X = GetWallJumpX(player.State, player.IsSliding, xStart);
             result.Y = PlayerObject.PLAYER_JUMP_SPEED;
-            if ((_wallJumpElapsed += gameTime.ElapsedGameTime) > _wallJumpFinish)
-            {
-                _wallJumpElapsed = TimeSpan.Zero;
-                player.IsWallJumping = false;
-            }
 
+            player.IsWallJumping = AdvanceWallJumpTimer(gameTime);
             return result;
         }
 
-        private void resetJumping(PlayerObject player)
+        private float GetWallJumpX(PlayerState state, bool sliding, float start)
+        {
+            if (WallJumpPropeling())
+            {
+                if (state == _slideStart)
+                {
+                    return GetSlideSpeed(state);
+                }
+                else if (sliding)
+                {
+                    return 0f;
+                }
+            }
+            return start;
+        }
+
+        private bool WallJumpPropeling()
+        {
+            return _wallJumpElapsed < _wallJumpPropel;
+        }
+
+        private float GetSlideSpeed(PlayerState state)
+        {
+            return (state == PlayerState.WallSlideL)
+                        ? PlayerObject.PLAYER_SPEED
+                        : -PlayerObject.PLAYER_SPEED;
+        }
+
+        private bool AdvanceWallJumpTimer(GameTime gameTime)
+        {
+            if ((_wallJumpElapsed += gameTime.ElapsedGameTime) > _wallJumpFinish)
+            {
+                _wallJumpElapsed = TimeSpan.Zero;
+                return false;
+            }
+            return true;
+        }
+
+        private void ResetJumping(PlayerObject player)
         {
             player.IsJumping = player.IsWallJumping = false;
             _jumpElapsed = TimeSpan.Zero;
             _wallJumpElapsed = TimeSpan.Zero;
         }
 
-        private void setPlayerDirection(PlayerObject player, GamePadThumbSticks sticks)
+        private void SetPlayerDirection(PlayerObject player, GamePadThumbSticks sticks)
         {
             if (sticks.Left.X > STICK_THRESHOLD)
             {
