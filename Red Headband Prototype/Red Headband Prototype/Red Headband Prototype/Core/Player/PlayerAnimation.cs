@@ -94,7 +94,7 @@
         {
             foreach (var animation in _animations)
             {
-                animation.Value.ResetAnimation();
+                animation.Value.Reset();
             }
         }
 
