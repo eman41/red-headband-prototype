@@ -3,23 +3,24 @@
     using System;
     using Microsoft.Xna.Framework;
 
-    public class Animation
+    public class Animation : IResetable
     {
-        private TimeSpan _elapsed;
-        private TimeSpan _interval;
+        private int _totalFrames;
+        private int _currentFrame;
         private Rectangle[] _frames;
-        private bool _oneShot = false;
-        private bool _stopAnimation = false;
+
+        private Timer _animTimer;
+        private bool _isOneShot = false;
+        private bool _isAnimStopped = false;
 
         public Animation(string name, Rectangle firstRect, int frames, int spacing, TimeSpan interval, bool oneShot = false)
         {
-            _elapsed = TimeSpan.Zero;
             _frames = new Rectangle[frames];
-            _interval = interval;
+            _animTimer = new Timer(interval);
             Name = name;
-            CurrentFrame = 0;
-            TotalFrames = frames;
-            _oneShot = oneShot;
+            _currentFrame = 0;
+            _totalFrames = frames;
+            _isOneShot = oneShot;
             if (frames > 1)
             {
                 for (int i = 0; i < frames; i++)
@@ -33,62 +34,52 @@
             }
             else
             {
-                Frames[0] = firstRect;
+                _frames[0] = firstRect;
             }
         }
 
-        public int CurrentFrame { get; set; }
-        public int TotalFrames { get; set; }
-        public string Name { get; set; }
-
-        public Rectangle[] Frames 
-        {
-            get
-            {
-                return _frames;
-            }
-        }
+        public string Name { get; private set; }
 
         public Rectangle CurrentClip
         {
             get
             {
-                return _frames[CurrentFrame];
+                return _frames[_currentFrame];
             }
         }
 
         public void Update(GameTime gameTime)
         {
-            _elapsed += gameTime.ElapsedGameTime;
-            if (AdvanceFrame())
+            bool isTimeUp = _animTimer.AdvanceTimerCyclic(gameTime.ElapsedGameTime);
+            if (AdvanceFrame(isTimeUp))
             {
-                CurrentFrame++;
-                _elapsed = TimeSpan.Zero;
-                if (CurrentFrame == TotalFrames)
+                _currentFrame++;
+                _animTimer.Reset();
+                if (_currentFrame == _totalFrames)
                 {
-                    if (_oneShot)
+                    if (_isOneShot)
                     {
-                        _stopAnimation = true;
-                        CurrentFrame--;
+                        _isAnimStopped = true;
+                        _currentFrame--;
                     }
                     else
                     {
-                        CurrentFrame = 0;
+                        _currentFrame = 0;
                     }
                 }
             }
         }
 
-        public void ResetAnimation()
+        public void Reset()
         {
-            _elapsed = TimeSpan.Zero;
-            CurrentFrame = 0;
-            _stopAnimation = false;
+            _animTimer.Reset();
+            _currentFrame = 0;
+            _isAnimStopped = false;
         }
 
-        private bool AdvanceFrame()
+        private bool AdvanceFrame(bool isTimeUp)
         {
-            return (TotalFrames > 1) && (_elapsed > _interval) && !_stopAnimation;
+            return (_totalFrames > 1) && !_isAnimStopped && isTimeUp;
         }
     }
 }

@@ -11,16 +11,15 @@ namespace TileEngine.Engine.Platforms
 
     public class PlatformController : IResetable
     {
-        private Vector2 _start = Vector2.Zero;
-        private Vector2 _stop = Vector2.Zero;
+        private Vector2 _startPos = Vector2.Zero;
+        private Vector2 _stopPos = Vector2.Zero;
 
         private bool _beingHeld = false;
         private bool _moveOneTime = false; 
         private bool _holdingUntilReset = false;
 
+        private Timer _holdTimer;
         private Vector2 _heldVelocity = Vector2.Zero;
-        private TimeSpan _holdElapsed = TimeSpan.Zero;
-        private TimeSpan _maxHoldDuration = TimeSpan.Zero;
 
         /// <summary>
         /// Initializes a new platform controller. 
@@ -29,24 +28,24 @@ namespace TileEngine.Engine.Platforms
         public PlatformController(Vector2 start, Vector2 stop, float speed, 
             TimeSpan holdTime, bool oneTime = false)
         {
-            _maxHoldDuration = holdTime;
+            _holdTimer = new Timer(holdTime);
             _moveOneTime = oneTime;
 
-            _start = translateToPixelCoords(start);
-            _stop = translateToPixelCoords(stop);
+            _startPos = TranslateToPixelCoords(start);
+            _stopPos = TranslateToPixelCoords(stop);
 
-            Position = _start;
-            Velocity = getStartVelocity(start, stop, speed);
+            Position = _startPos;
+            Velocity = GetStartVelocity(start, stop, speed);
         }
 
-        private Vector2 translateToPixelCoords(Vector2 levelCoords)
+        private Vector2 TranslateToPixelCoords(Vector2 levelCoords)
         {
             float x = levelCoords.X * GameMap.TILE_SIZE;
             float y = levelCoords.Y * GameMap.TILE_SIZE;
             return new Vector2(x, y);
         }
 
-        private Vector2 getStartVelocity(Vector2 start, Vector2 stop, float speed)
+        private Vector2 GetStartVelocity(Vector2 start, Vector2 stop, float speed)
         {
             Vector2 moveNormal = new Vector2(start.X - stop.X, start.Y - stop.Y);
             moveNormal.Normalize();
@@ -54,14 +53,14 @@ namespace TileEngine.Engine.Platforms
         }
 
         /// <summary>
-        /// X, Y pixel coordinates of this platform
+        /// Current X, Y pixel coordinates of this platform
         /// </summary>
         public Vector2 Position { get; set; }
 
         /// <summary>
         /// Current platform speed
         /// </summary>
-        public Vector2 Velocity { get; private set; }
+        public Vector2 Velocity { get; set; }
 
         /// <summary>
         /// Reset this entity to it's starting state
@@ -70,8 +69,8 @@ namespace TileEngine.Engine.Platforms
         {
             _beingHeld = false;
             _holdingUntilReset = false;
-            Position = _start;
-            _holdElapsed = TimeSpan.Zero;
+            Position = _startPos;
+            _holdTimer.Reset();
         }
 
         /// <summary>
@@ -82,68 +81,71 @@ namespace TileEngine.Engine.Platforms
         {
             if (_beingHeld)
             {
-                if (holdDurationExceeded(gameTime))
+                if (HoldDurationExceeded(gameTime.ElapsedGameTime))
                 {
-                    releaseAndReverseDirection();
+                    ReleaseAndReverseDirection();
                 }
                 else
                 {
-                    clampToNearestEndpoint();
+                    ClampToNearestEndpoint();
                 }
             }
-            else if (outsideEndPoints())
+            else if (OutsideEndPoints())
             {
-                holdPlatform();
+                HoldPlatform();
             }
 
-            updatePosition();
+            UpdatePosition();
         }
 
-        private bool holdDurationExceeded(GameTime gameTime)
+        private bool HoldDurationExceeded(TimeSpan elapsed)
         {
-            return (_holdElapsed += gameTime.ElapsedGameTime) > _maxHoldDuration;
+            return _holdTimer.AdvanceTimerCyclic(elapsed);
+
         }
 
-        private void releaseAndReverseDirection()
+        private void ReleaseAndReverseDirection()
         {
             _beingHeld = false;
-            _holdElapsed = TimeSpan.Zero;
             Velocity = -1 * _heldVelocity;
         }
 
-        private void clampToNearestEndpoint()
+        private void ClampToNearestEndpoint()
         {
             Velocity = Vector2.Zero;
-            if (isCloserToStart())
+            if (IsCloserToStart())
             {
-                Position = _start;
+                Position = _startPos;
             }
             else
             {
-                Position = _stop;
+                Position = _stopPos;
                 _holdingUntilReset = _moveOneTime;
             }
         }
 
-        private bool isCloserToStart()
+        private bool IsCloserToStart()
         {
-            float distanceToStart = Vector2.Distance(_start, Position);
-            float distanceToEnd = Vector2.Distance(_stop, Position);
-            return distanceToStart < distanceToEnd;
+            return DistanceTo(_startPos) < DistanceTo(_stopPos);
         }
 
-        private void holdPlatform()
+        private float DistanceTo(Vector2 vec)
+        {
+            return Vector2.Distance(vec, Position);
+        }
+
+        private void HoldPlatform()
         {
             _beingHeld = true;
             _heldVelocity = Velocity;
             Velocity = Vector2.Zero;
         }
 
-        private void updatePosition()
+        private void UpdatePosition()
         {
             if (_holdingUntilReset)
             {
-                Position = _stop;
+                Position = _stopPos;
                 Velocity = Vector2.Zero;
             }
             else
@@ -152,9 +154,9 @@ namespace TileEngine.Engine.Platforms
             }
         }
 
-        private bool outsideEndPoints()
+        private bool OutsideEndPoints()
         {
-            return !PointBetween(_start, _stop, Position + Velocity);
+            return !PointBetween(_startPos, _stopPos, Position + Velocity);
         }
 
         private bool PointBetween(Vector2 p1, Vector2 p2, Vector2 pos)
@@ -165,8 +167,7 @@ namespace TileEngine.Engine.Platforms
             float xMax = Math.Max(p1.X, p2.X);
             float yMax = Math.Max(p1.Y, p2.Y);
 
-            return (pos.X >= xMin && pos.X <= xMax)
-                    && (pos.Y >= yMin && pos.Y <= yMax);
+            return (pos.X >= xMin && pos.X <= xMax) && (pos.Y >= yMin && pos.Y <= yMax);
         }
     }
 }

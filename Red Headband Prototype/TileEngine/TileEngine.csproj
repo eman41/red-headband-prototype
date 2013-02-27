@@ -103,6 +103,7 @@
     <Compile Include="Engine\Platforms\MovingPlatform.cs" />
     <Compile Include="Engine\Platforms\PlatformController.cs" />
     <Compile Include="Engine\TileObject.cs" />
+    <Compile Include="Engine\Timer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />
