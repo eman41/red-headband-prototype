@@ -132,7 +132,7 @@ namespace Red_Headband_Prototype.Core
         private Vector2 PollJump(PlayerObject player, float xStart, GameTime gameTime)
         {
             Vector2 result = new Vector2(xStart, PlayerObject.PLAYER_JUMP_SPEED);
-            player.IsJumping = _jumpTimer.AdvanceTimerCyclic(gameTime.ElapsedGameTime);
+            player.IsJumping = !_jumpTimer.AdvanceTimerCyclic(gameTime.ElapsedGameTime);
             return result;
         }
 
@@ -176,7 +176,7 @@ namespace Red_Headband_Prototype.Core
 
         private bool AdvanceWallJumpTimer(GameTime gameTime)
         {
-            return _wallJumpTimer.AdvanceTimerCyclic(gameTime.ElapsedGameTime);
+            return !_wallJumpTimer.AdvanceTimerCyclic(gameTime.ElapsedGameTime);
         }
 
         private void ResetJumping(PlayerObject player)
