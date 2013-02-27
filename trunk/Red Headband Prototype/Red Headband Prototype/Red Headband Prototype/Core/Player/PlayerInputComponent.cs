@@ -1,4 +1,9 @@
-﻿namespace Red_Headband_Prototype.Core
+﻿// -----------------------------------------------------------------------
+// <copyright file="PlayerInputComponent.cs" company="Me" />
+// Author: Eric S. Policaro
+// Handles 
+// -----------------------------------------------------------------------
+namespace Red_Headband_Prototype.Core
 {
     using System;
     using Microsoft.Xna.Framework;
@@ -10,13 +15,11 @@
         private GamePadState _state;
         private GamePadState _lastState;
         private PlayerState _slideStart;
-        private TimeSpan _jumpElapsed = TimeSpan.Zero;
-        private TimeSpan _jumpFinish = TimeSpan.FromMilliseconds(350);
-        private TimeSpan _wallJumpElapsed = TimeSpan.Zero;
+        
         private TimeSpan _wallJumpPropel = TimeSpan.FromMilliseconds(150);
-        private TimeSpan _wallJumpFinish = TimeSpan.FromMilliseconds(350);
-        private TimeSpan _shieldElapsed = TimeSpan.Zero;
-        private TimeSpan _afterHitShield = TimeSpan.FromMilliseconds(750);
+        private Timer _wallJumpTimer = new Timer(TimeSpan.FromMilliseconds(350));
+        private Timer _jumpTimer = new Timer(TimeSpan.FromMilliseconds(350));
+        private Timer _shieldTimer = new Timer(TimeSpan.FromMilliseconds(750));
 
         private const float SLIDE_UP_COEFF = 0.6f;
         private const float SLIDE_DOWN_COEFF = 0.8f;
@@ -41,12 +44,7 @@
                 velocity.X = player.IsFacingLeft ? 1f : -1f;
                 velocity.Y = applyGravity(player, velocity.Y);
                 ResetJumping(player);
-
-                if ((_shieldElapsed += gameTime.ElapsedGameTime) > _afterHitShield)
-                {
-                    _shieldElapsed = TimeSpan.Zero;
-                    player.GotHit = false;
-                }
+                player.GotHit = _shieldTimer.AdvanceTimerCyclic(gameTime.ElapsedGameTime);
             }
             else
             {
@@ -94,7 +92,7 @@
 
         private float applyGravity(PlayerObject player, float yVelocity)
         {
-            if (OnTheGround(player)) // Player in a gravity affected state
+            if (OnTheGround(player)) // Player in a gravity-affected state
             {
                 return GameMaster.CurrentLevel.Gravity;
             }
@@ -134,12 +132,7 @@
         private Vector2 PollJump(PlayerObject player, float xStart, GameTime gameTime)
         {
             Vector2 result = new Vector2(xStart, PlayerObject.PLAYER_JUMP_SPEED);
-            if ((_jumpElapsed += gameTime.ElapsedGameTime) > _jumpFinish)
-            {
-                _jumpElapsed = TimeSpan.Zero;
-                player.IsJumping = false;
-            }
-            
+            player.IsJumping = _jumpTimer.AdvanceTimerCyclic(gameTime.ElapsedGameTime);
             return result;
         }
 
@@ -171,7 +164,7 @@
 
         private bool WallJumpPropeling()
         {
-            return _wallJumpElapsed < _wallJumpPropel;
+            return !_wallJumpTimer.HasReached(_wallJumpPropel);
         }
 
         private float GetSlideSpeed(PlayerState state)
@@ -183,19 +176,14 @@
 
         private bool AdvanceWallJumpTimer(GameTime gameTime)
         {
-            if ((_wallJumpElapsed += gameTime.ElapsedGameTime) > _wallJumpFinish)
-            {
-                _wallJumpElapsed = TimeSpan.Zero;
-                return false;
-            }
-            return true;
+            return _wallJumpTimer.AdvanceTimerCyclic(gameTime.ElapsedGameTime);
         }
 
         private void ResetJumping(PlayerObject player)
         {
             player.IsJumping = player.IsWallJumping = false;
-            _jumpElapsed = TimeSpan.Zero;
-            _wallJumpElapsed = TimeSpan.Zero;
+            _jumpTimer.Reset();
+            _wallJumpTimer.Reset();
         }
 
         private void SetPlayerDirection(PlayerObject player, GamePadThumbSticks sticks)
