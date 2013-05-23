@@ -1,18 +1,17 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="PlatformController.cs" company="" />
+// PlatformController.cs: Handles the movement, speed, and location of a platform
 // Author: Eric S. Policaro
-// Handles the movement, speed, and location of a platform
 // -----------------------------------------------------------------------
 namespace TileEngine.Engine.Platforms
 {
     using System;
     using Microsoft.Xna.Framework;
-    using TileEngine.Engine;
 
     public class PlatformController : IResetable
     {
         private Vector2 _startPos = Vector2.Zero;
         private Vector2 _stopPos = Vector2.Zero;
+        private float _speed = 0f;
 
         private bool _beingHeld = false;
         private bool _moveOneTime = false; 
@@ -22,20 +21,20 @@ namespace TileEngine.Engine.Platforms
         private Vector2 _heldVelocity = Vector2.Zero;
 
         /// <summary>
-        /// Initializes a new platform controller. 
-        /// Position Vectors should be given in level tile coordinates.
+        /// Initializes a new platform controller.
+        /// Start/Strop should be given in level tile coordinates.
         /// </summary>
         public PlatformController(Vector2 start, Vector2 stop, float speed, 
-            TimeSpan holdTime, bool oneTime = false)
+                                  TimeSpan holdTime, bool oneTime = false)
         {
             _holdTimer = new Timer(holdTime);
             _moveOneTime = oneTime;
 
             _startPos = TranslateToPixelCoords(start);
             _stopPos = TranslateToPixelCoords(stop);
+            _speed = speed;
 
-            Position = _startPos;
-            Velocity = GetStartVelocity(start, stop, speed);
+            Reset();
         }
 
         private Vector2 TranslateToPixelCoords(Vector2 levelCoords)
@@ -52,32 +51,25 @@ namespace TileEngine.Engine.Platforms
             return new Vector2(moveNormal.X * speed, moveNormal.Y * speed);
         }
 
-        /// <summary>
-        /// Current X, Y pixel coordinates of this platform
-        /// </summary>
+        /// <summary>Current X, Y pixel coordinates of this platform</summary>
         public Vector2 Position { get; set; }
 
-        /// <summary>
-        /// Current platform speed
-        /// </summary>
+        /// <summary>Current platform speed</summary>
         public Vector2 Velocity { get; set; }
 
-        /// <summary>
-        /// Reset this entity to it's starting state
-        /// </summary>
+        /// <summary>Reset this entity to it's starting state</summary>
         public void Reset()
         {
+            Position = _startPos;
+            Velocity = GetStartVelocity(_startPos, _stopPos, _speed);
             _beingHeld = false;
             _holdingUntilReset = false;
-            Position = _startPos;
             _holdTimer.Reset();
         }
 
-        /// <summary>
-        /// Update the state of the platform.
-        /// </summary>
+        /// <summary>Update the state of the platform.</summary>
         /// <param name="gameTime">Current Game time</param>
-        public virtual void Update(GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
             if (_beingHeld)
             {
@@ -90,18 +82,16 @@ namespace TileEngine.Engine.Platforms
                     ClampToNearestEndpoint();
                 }
             }
-            else if (OutsideEndPoints())
+            else if (!BetweenEndPoints())
             {
                 HoldPlatform();
             }
-
             UpdatePosition();
         }
 
         private bool HoldDurationExceeded(TimeSpan elapsed)
         {
             return _holdTimer.AdvanceTimerCyclic(elapsed);
-
         }
 
         private void ReleaseAndReverseDirection()
@@ -113,15 +103,8 @@ namespace TileEngine.Engine.Platforms
         private void ClampToNearestEndpoint()
         {
             Velocity = Vector2.Zero;
-            if (IsCloserToStart())
-            {
-                Position = _startPos;
-            }
-            else
-            {
-                Position = _stopPos;
-                _holdingUntilReset = _moveOneTime;
-            }
+            Position = IsCloserToStart() ? _startPos : _stopPos;
+            _holdingUntilReset = _moveOneTime && Position.Equals(_stopPos);
         }
 
         private bool IsCloserToStart()
@@ -134,21 +117,9 @@ namespace TileEngine.Engine.Platforms
             return Vector2.Distance(vec, Position);
         }
 
-        private bool OutsideEndPoints()
+        private bool BetweenEndPoints()
         {
-            return !PointBetween(_startPos, _stopPos, Position + Velocity);
-        }
-
-        private bool PointBetween(Vector2 p1, Vector2 p2, Vector2 pos)
-        {
-            float xMin = Math.Min(p1.X, p2.X);
-            float yMin = Math.Min(p1.Y, p2.Y);
-
-            float xMax = Math.Max(p1.X, p2.X);
-            float yMax = Math.Max(p1.Y, p2.Y);
-
-            return (pos.X >= xMin && pos.X <= xMax)
-                    && (pos.Y >= yMin && pos.Y <= yMax);
+            return MathUtilities.PointBetween(_startPos, _stopPos, Position + Velocity);
         }
 
         private void HoldPlatform()
@@ -160,15 +131,10 @@ namespace TileEngine.Engine.Platforms
 
         private void UpdatePosition()
         {
-            if (_holdingUntilReset)
-            {
-                Position = _stopPos;
-                Velocity = Vector2.Zero;
-            }
-            else
+            if (!_holdingUntilReset)
             {
                 Position += Velocity;
             }
-        }   
+        }
     }
 }
