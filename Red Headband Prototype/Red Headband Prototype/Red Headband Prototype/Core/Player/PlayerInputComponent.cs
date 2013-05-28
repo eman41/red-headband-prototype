@@ -10,7 +10,7 @@ namespace Red_Headband_Prototype.Core
     using TileEngine.Engine;
 
     /// <summary>
-    /// Class used to handle player actions through an XBOX controller.
+    /// Class used to handle player actions 
     /// </summary>
     public class PlayerInputComponent : IInput
     {

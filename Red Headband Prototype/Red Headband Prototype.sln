@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LevelEditor2", "..\LevelEdi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TileEngine", "TileEngine\TileEngine.csproj", "{778B531E-B163-4D0A-8A51-C3FC02E19F16}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedHeadbandTests", "RedHeadbandTests\RedHeadbandTests.csproj", "{C1DA09E3-FC0B-4FD0-89B5-079072985CBA}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{77A0CC33-E66D-4FC8-B3A8-D84114B53D70}"
 	ProjectSection(SolutionItems) = preProject
 		Local.testsettings = Local.testsettings
@@ -71,16 +69,6 @@ Global
 		{778B531E-B163-4D0A-8A51-C3FC02E19F16}.Release|Mixed Platforms.Build.0 = Release|x86
 		{778B531E-B163-4D0A-8A51-C3FC02E19F16}.Release|x86.ActiveCfg = Release|x86
 		{778B531E-B163-4D0A-8A51-C3FC02E19F16}.Release|x86.Build.0 = Release|x86
-		{C1DA09E3-FC0B-4FD0-89B5-079072985CBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C1DA09E3-FC0B-4FD0-89B5-079072985CBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C1DA09E3-FC0B-4FD0-89B5-079072985CBA}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{C1DA09E3-FC0B-4FD0-89B5-079072985CBA}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{C1DA09E3-FC0B-4FD0-89B5-079072985CBA}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{C1DA09E3-FC0B-4FD0-89B5-079072985CBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C1DA09E3-FC0B-4FD0-89B5-079072985CBA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C1DA09E3-FC0B-4FD0-89B5-079072985CBA}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{C1DA09E3-FC0B-4FD0-89B5-079072985CBA}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{C1DA09E3-FC0B-4FD0-89B5-079072985CBA}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
