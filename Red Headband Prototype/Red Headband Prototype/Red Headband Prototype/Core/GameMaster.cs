@@ -45,7 +45,7 @@ namespace Red_Headband_Prototype.Core
         private static ILevel _level;
 
         /// <summary>Displays the hud gui.</summary>
-        private HudComponent _hudComponent;
+        private HealthBar _hudComponent;
 
         private Dictionary<string, ILevel> _levelCache = new Dictionary<string,ILevel>(); 
 
@@ -145,7 +145,7 @@ namespace Red_Headband_Prototype.Core
 
             if (_hudComponent == null)
             {
-                _hudComponent = new HudComponent(this, "XML/HudData.xml", _playerOne);
+                _hudComponent = new HealthBar(this, "XML/HudData.xml", _playerOne);
             }
             else
             {

@@ -8,7 +8,7 @@
     using Microsoft.Xna.Framework.Graphics;
     using TileEngine.Engine;
 
-    public class HudComponent : GameComponent, IResetable
+    public class HealthBar : GameComponent, IResetable
     {
         private PlayerObject _player;
         private Texture2D _sheet;
@@ -25,7 +25,7 @@
         private int _hpB = COLOR_MAX;
 
 
-        public HudComponent(Game game, String dataPath, PlayerObject player)
+        public HealthBar(Game game, String dataPath, PlayerObject player)
             : base(game)
         {
             _player = player;

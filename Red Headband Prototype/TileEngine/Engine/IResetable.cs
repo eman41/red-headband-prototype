@@ -1,13 +1,17 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="IResetable.cs" company="Me" />
+// IResetable.cs: Contains an interface for defining resetable components.
 // Author: Eric S. Policaro
-// Defines an object that can be reset back to an initial state.
-// Useful for elements that may have multiple or complex starting states.
 // -----------------------------------------------------------------------
 namespace TileEngine.Engine
 {
+    /// <summary>
+    /// Interface used to define an object that can be reset back to an initial state.
+    /// </summary>
     public interface IResetable
     {
+        /// <summary>
+        /// Reset this object back to its starting state.
+        /// </summary>
         void Reset();
     }
 }

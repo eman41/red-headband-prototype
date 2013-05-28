@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="MovingPlatform.cs" company="" />
+// MovingPlatform.cs: Standard movement/travel platform
 // Author: Eric S. Policaro
 // -----------------------------------------------------------------------
 namespace TileEngine.Engine.Platforms
@@ -9,10 +9,14 @@ namespace TileEngine.Engine.Platforms
     using TileEngine.Engine;
     using TileEngine.Engine.AI;
 
+    /// <summary>
+    /// Class representing a standard platformer moving platformer.
+    /// All moving platforms start sleeping.
+    /// </summary>
     public class MovingPlatform : IResetable
     {
         private Rectangle _draw;
-        private Texture2D _elevatorSheet;
+        private Texture2D _texture;
         protected PlatformController _controller;
         private bool _sleeping = true;
 
@@ -20,21 +24,27 @@ namespace TileEngine.Engine.Platforms
         /// Initializes a new instance of the <see cref="MovingPlatform"/> class.
         /// All platforms are initialized in a sleeping state.
         /// </summary>
-        /// <param name="sheet">Texture sheet for platform objects.</param>
-        /// <param name="controller">Controller for this platform</param>
+        /// <param name="texture">Texture sheet for platform objects.</param>
+        /// <param name="control">Controller for this platform</param>
         /// <param name="draw">Draw rectangle for the texture sheet (also used in bounding box calculations).</param>
-        public MovingPlatform(Texture2D sheet, PlatformController controller, Rectangle draw)
+        public MovingPlatform(Texture2D texture, PlatformController control, Rectangle draw)
         {
-            _elevatorSheet = sheet;
+            _texture = texture;
             _draw = draw;
-            _controller = controller;
+            _controller = control;
         }
 
+        /// <summary>
+        /// Returns true if this platform is asleep.
+        /// </summary>
         public bool IsSleeping
         {
             get { return _sleeping; }
         }
-
+        
+        /// <summary>
+        /// Gets the bounding rectangle for this platform.
+        /// </summary>
         public Rectangle BoundingRect
         {
             get
@@ -45,6 +55,9 @@ namespace TileEngine.Engine.Platforms
             }
         }
 
+        /// <summary>
+        /// Gets the velocity of the platform.
+        /// </summary>
         public Vector2 Velocity
         {
             get
@@ -53,16 +66,26 @@ namespace TileEngine.Engine.Platforms
             }
         }
 
+        /// <summary>
+        /// Wake the platform to allow it to move.
+        /// </summary>
         public void WakeUp()
         {
             _sleeping = false;
         }
 
+        /// <summary>
+        /// Put the platform to sleep, stopping its movement.
+        /// </summary>
         public void Sleep()
         {
             _sleeping = true;
         }
 
+        /// <summary>
+        /// Update the position of the platform.
+        /// </summary>
+        /// <param name="gameTime">Game time snapshot</param>
         public virtual void Update(GameTime gameTime)
         {
             if (!_sleeping)
@@ -71,14 +94,21 @@ namespace TileEngine.Engine.Platforms
             }
         }
 
+        /// <summary>
+        /// Reset the platform to its original position.
+        /// </summary>
         public void Reset()
         {
             _controller.Reset();
         }
-
+        
+        /// <summary>
+        /// Draw the platform on the screen.
+        /// </summary>
+        /// <param name="batch">Spritebatch used to draw the platform.</param>
         public void Draw(SpriteBatch batch)
         {
-            batch.Draw(_elevatorSheet, _controller.Position, _draw, Color.White);
+            batch.Draw(_texture, _controller.Position, _draw, Color.White);
         }
     }
 }

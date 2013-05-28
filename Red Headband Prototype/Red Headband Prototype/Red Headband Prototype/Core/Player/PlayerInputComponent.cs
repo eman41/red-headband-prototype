@@ -1,7 +1,6 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="PlayerInputComponent.cs" company="Me" />
+// IResetable.cs: Standard XBOX controller driven input
 // Author: Eric S. Policaro
-// Handles 
 // -----------------------------------------------------------------------
 namespace Red_Headband_Prototype.Core
 {
@@ -10,6 +9,9 @@ namespace Red_Headband_Prototype.Core
     using Microsoft.Xna.Framework.Input;
     using TileEngine.Engine;
 
+    /// <summary>
+    /// Class used to handle player actions through an XBOX controller.
+    /// </summary>
     public class PlayerInputComponent : IInput
     {
         private GamePadState _state;
