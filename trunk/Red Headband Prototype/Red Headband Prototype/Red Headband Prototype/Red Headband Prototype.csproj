@@ -108,7 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\DemoInputComponent.cs" />
-    <Compile Include="Core\GUI\HudComponent.cs" />
+    <Compile Include="Core\GUI\HealthBar.cs" />
     <Compile Include="Core\Interfaces\IInputComponent.cs" />
     <Compile Include="Core\Interfaces\IKillRect.cs" />
     <Compile Include="Core\Interfaces\IPhysicsEngine.cs" />

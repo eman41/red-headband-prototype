@@ -1,11 +1,15 @@
-﻿namespace TileEngine.Engine.AI
+﻿// -----------------------------------------------------------------------
+// Sensor.cs: Sensors used for simple AI and event triggering.
+// Author: Eric S. Policaro
+// -----------------------------------------------------------------------
+namespace TileEngine.Engine.AI
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using Microsoft.Xna.Framework;
 
+    /// <summary>
+    /// Class representing a simple sensor for triggering events in a game.
+    /// </summary>
     public class Sensor
     {
         /// <summary>
@@ -29,6 +33,16 @@
         /// </summary>
         public Facing _directionFlags;
 
+        /// <summary>Creates a new Sensor</summary>
+        /// <param name="obj">Object to sense</param>
+        /// <param name="origin">Position of the sensor</param>
+        /// <param name="bias">
+        /// Distance from the origin this sensor can detect.
+        /// X: Distance horizontally, left and right
+        /// Y: Distance vertically, up and down
+        /// </param>
+        /// <param name="detection">
+        /// Direction the sensor is detecting (can take multiple flags)</param>
         public Sensor(GameObject obj, Point origin, Point bias, Facing detection)
         {
             _subject = obj;
@@ -106,6 +120,9 @@
         }
     }
 
+    /// <summary>
+    /// Directions a Sensor can detect in.
+    /// </summary>
     [Flags]
     public enum Facing
     {

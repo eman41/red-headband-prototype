@@ -1,7 +1,6 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="GameObject.cs" company="Me" />
+// GameObject.cs: A drawable entity with bounding box (full sprite options included).
 // Author: Eric S. Policaro
-// A drawable entity with bounding box (full sprite options included).
 // -----------------------------------------------------------------------
 namespace TileEngine.Engine
 {
@@ -9,12 +8,22 @@ namespace TileEngine.Engine
     using Microsoft.Xna.Framework;
     using Microsoft.Xna.Framework.Graphics;
 
+    /// <summary>
+    /// Class representing a standard game object.
+    /// </summary>
     public class GameObject
     {
         public Vector2 Position;
         public Vector2 Velocity;
         protected Rectangle _boundingRect;
 
+        /// <summary>
+        /// Create a new GameObject.
+        /// </summary>
+        /// <param name="pos">Starting position</param>
+        /// <param name="rect">Bounding rectangle</param>
+        /// <param name="velocity">Velocity of this object (moving)</param>
+        /// <param name="active">Object is active</param>
         public GameObject(Vector2 pos, Rectangle rect, Vector2 velocity, bool active)
         {
             Position = pos;
@@ -36,6 +45,9 @@ namespace TileEngine.Engine
         public Vector2 Origin { get; set; }
         public float Rotation { get; set; }
 
+        /// <summary>
+        /// Gets the object position in level coordinates.
+        /// </summary>
         public Point Coords
         {
             get
@@ -46,6 +58,9 @@ namespace TileEngine.Engine
             }
         }
 
+        /// <summary>
+        /// Gets the bounding rectangle for this object.
+        /// </summary>
         public Rectangle BoundingRect
         {
             get
@@ -64,6 +79,9 @@ namespace TileEngine.Engine
             }
         }
 
+        /// <summary>
+        /// Gets true if the object is in motion.
+        /// </summary>
         public bool InMotion
         {
             get
@@ -72,11 +90,21 @@ namespace TileEngine.Engine
             }
         }
 
+        /// <summary>
+        /// Checks if this object is inside of the given object vertically.
+        /// </summary>
+        /// <param name="incoming">Bounding rectangle to check</param>
+        /// <returns>True if object is inside (vertically)</returns>
         public bool YRectAlign(Rectangle incoming)
         {
             return BoundingRect.Left >= incoming.Left && BoundingRect.Right <= incoming.Right;
         }
 
+        /// <summary>
+        /// Checks if this object is colliding with the given rectangle.
+        /// </summary>
+        /// <param name="incoming">Rectangle to check</param>
+        /// <returns>True if a collision has occurred</returns>
         public bool Collision(Rectangle incoming)
         {
             return BoundingRect.Intersects(incoming);

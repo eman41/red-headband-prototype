@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="Camera2D.cs" company="Me" />
+// Camera2D.cs
 // Author: Eric S. Policaro
 // Standard orthographic camera.
 // Features:

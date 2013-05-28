@@ -1,18 +1,25 @@
-﻿namespace TileEngine.Collision
+﻿// -----------------------------------------------------------------------
+// Collision.cs: Provides utility for detecting and resolving collisions.
+// Author: Eric S. Policaro
+// -----------------------------------------------------------------------
+namespace TileEngine.Collision
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using TileEngine.Engine;
     using Microsoft.Xna.Framework;
     using TileEngine.Engine.Platforms;
 
+    /// <summary>
+    /// Axes for detection.
+    /// </summary>
     public enum Axis
     {
         X_AXIS, Y_AXIS
     }
 
+    /// <summary>
+    /// Directions that collisions can occur.
+    /// </summary>
     [Flags]
     public enum Colliding
     {
@@ -23,8 +30,16 @@
         FromBottom = 0x8
     }
 
-    public sealed class Collision
+    /// <summary>
+    /// Class used to detect and resolve collision against a level and objects/platforms
+    /// that exist in that level.
+    /// </summary>
+    public class Collision
     {
+        /// <summary>
+        /// Creates a new instance of Collision.
+        /// </summary>
+        /// <param name="level">Level to use in collision tests</param>
         public Collision(GameMap level)
         {
             MapLevel = level;
@@ -37,6 +52,13 @@
         public TileObject LastCollider { get; set; }
         public MovingPlatform LastPlatform { get; set; }
 
+        /// <summary>
+        /// Detect a collision between the level and the specified game object
+        /// on the given axis.
+        /// </summary>
+        /// <param name="obj">Object to check</param>
+        /// <param name="axis">Axis to detect along</param>
+        /// <returns>Direction of the collision</returns>
         public Colliding CheckLevelCollision(GameObject obj, Axis axis)
         {
             for (int y = ScanBounds.Y; y < ScanBounds.Height; y++)
@@ -55,6 +77,12 @@
             return Colliding.None;
         }
 
+        /// <summary>
+        /// Detect a collision between the level and bounding rectangle.
+        /// </summary>
+        /// <param name="obj">Rectangle to check</param>
+        /// <param name="axis">Axis to detect along</param>
+        /// <returns>Direction of the collision</returns>
         public Colliding CheckLevelCollision(Rectangle obj, Axis axis)
         {
             for (int y = ScanBounds.Y; y < ScanBounds.Height; y++)
@@ -65,7 +93,7 @@
                     if (TileObject.IsCollidable(tile) && obj.Intersects(tile.BoundingRect))
                     {
                         LastCollider = tile;
-                        return ResolveCollision(obj, tile.BoundingRect, axis);
+                        return ResolveRectCollision(obj, tile.BoundingRect, axis);
                     }
                 }
             }
@@ -73,9 +101,15 @@
             return Colliding.None;
         }
 
+        /// <summary>
+        /// Detects a collision between a game object and a moving platform.
+        /// </summary>
+        /// <param name="obj">Object to check</param>
+        /// <param name="axis">Axis to detect along</param>
+        /// <returns>Direction of the collision</returns>
         public Colliding CheckPlatformCollision(GameObject obj, Axis axis)
         {
-            foreach(var platform in MapLevel.Platforms)
+            foreach(MovingPlatform platform in MapLevel.Platforms)
             {
                 if (obj.Collision(platform.BoundingRect))
                 {
@@ -87,11 +121,18 @@
             return Colliding.None;
         }
 
-        public Colliding DetectCollision(GameObject obj, Rectangle body, Axis axis)
+        private Colliding DetectCollision(GameObject obj, Rectangle body, Axis axis)
         {
             return axis == Axis.X_AXIS ? XDirection(obj.BoundingRect, body) : YDirection(obj.BoundingRect, body);
         }
 
+        /// <summary>
+        /// Resolve a collision between a game object and bounding rectangle
+        /// that occurred in the given direction.
+        /// </summary>
+        /// <param name="obj">Object to check</param>
+        /// <param name="body">Axis to detect along</param>
+        /// <param name="colliding">Direction of the collision</param>
         public void ResolveCollision(GameObject obj, Rectangle? body, Colliding colliding)
         {
             if (body.HasValue)
@@ -113,8 +154,14 @@
                 }
             }
         }
-    
 
+        /// <summary>
+        /// Resolve a collision between a game object and a target on a specified axis.
+        /// </summary>
+        /// <param name="obj">Subject bounding rectangle</param>
+        /// <param name="target">Target bounding rectangle</param>
+        /// <param name="axis">Axis on which to resolve.</param>
+        /// <returns>Colliding indicating the direction of the collision.</returns>
         public Colliding DetectAndResolveCollision(GameObject obj, Rectangle body, Axis axis)
         {
             Colliding result = DetectCollision(obj, body, axis);
@@ -138,36 +185,43 @@
             return result;
         }
 
-        public Colliding ResolveCollision(Rectangle obj, Rectangle body, Axis axis)
+        // Resolve a collision between two bounding rectangles
+        private Colliding ResolveRectCollision(Rectangle obj, Rectangle target, Axis axis)
         {
-            Colliding result = axis == Axis.X_AXIS ? XDirection(obj, body) : YDirection(obj, body);
+            Colliding result = (axis == Axis.X_AXIS) ? XDirection(obj, target) : YDirection(obj, target);
 
             switch (result)
             {
                 case Colliding.FromTop:
-                    obj.Y += body.Top - obj.Bottom;
+                    obj.Y += target.Top - obj.Bottom;
                     break;
                 case Colliding.FromBottom:
-                    obj.Y += body.Bottom - obj.Top;
+                    obj.Y += target.Bottom - obj.Top;
                     break;
                 case Colliding.FromLeft:
-                    obj.X += body.Left - obj.Right;
+                    obj.X += target.Left - obj.Right;
                     break;
                 case Colliding.FromRight:
-                    obj.X += body.Right - obj.Left;
+                    obj.X += target.Right - obj.Left;
                     break;
             }
 
             return result;
         }
 
-        public Colliding YDirection(Rectangle obj, Rectangle body)
+        /// <summary>
+        /// Check for a collision on the X axis.
+        /// </summary>
+        /// <param name="obj">Subject bounding rectangle</param>
+        /// <param name="target">Target bounding rectangle</param>
+        /// <returns>Colliding indicating the direction of the collision.</returns>
+        public Colliding YDirection(Rectangle obj, Rectangle target)
         {
-            if (obj.Bottom >= body.Top && obj.Top <= body.Top)
+            if (ObjectAboveBody(ref obj, ref target))
             {
                 return Colliding.FromTop;
             }
-            else if (obj.Top <= body.Bottom && obj.Bottom >= body.Bottom)
+            else if (ObjectBelowBody(ref obj, ref target))
             {
                 return Colliding.FromBottom;
             }
@@ -175,13 +229,29 @@
             return Colliding.None;
         }
 
-        public Colliding XDirection(Rectangle obj, Rectangle body)
+        private bool ObjectBelowBody(ref Rectangle obj, ref Rectangle target)
         {
-            if (obj.Right >= body.Left && obj.Left <= body.Left)
+            return obj.Top <= target.Bottom && obj.Bottom >= target.Bottom;
+        }
+
+        private bool ObjectAboveBody(ref Rectangle obj, ref Rectangle target)
+        {
+            return obj.Bottom >= target.Top && obj.Top <= target.Top;
+        }
+
+        /// <summary>
+        /// Check for a collision on the X axis.
+        /// </summary>
+        /// <param name="obj">Subject bounding rectangle</param>
+        /// <param name="target">Target bounding rectangle</param>
+        /// <returns>Colliding indicated the direction of the collision.</returns>
+        public Colliding XDirection(Rectangle obj, Rectangle target)
+        {
+            if (ObjectLeftOfBody(ref obj, ref target))
             {
                 return Colliding.FromLeft;
             }
-            else if (obj.Left <= body.Right && obj.Right >= body.Right)
+            else if (ObjectRightOfBody(ref obj, ref target))
             {
                 return Colliding.FromRight;
             }
@@ -189,6 +259,22 @@
             return Colliding.None;
         }
 
+        private bool ObjectRightOfBody(ref Rectangle obj, ref Rectangle target)
+        {
+            return obj.Left <= target.Right && obj.Right >= target.Right;
+        }
+
+        private bool ObjectLeftOfBody(ref Rectangle obj, ref Rectangle target)
+        {
+            return obj.Right >= target.Left && obj.Left <= target.Left;
+        }
+
+        /// <summary>
+        /// Updates boundary around the player that will be checked for collision.
+        /// </summary>
+        /// <param name="coords">Player position in level coordinates</param>
+        /// <param name="threshold">Distance in tiles from the player to be detected</param>
+        /// <returns>Re-calculated collision boundary</returns>
         public Rectangle UpdateScanBounds(Point coords, int threshold)
         {
             Rectangle scanbounds = new Rectangle(
