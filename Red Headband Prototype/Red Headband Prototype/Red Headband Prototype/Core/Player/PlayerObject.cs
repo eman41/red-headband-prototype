@@ -1,10 +1,17 @@
-﻿namespace Red_Headband_Prototype.Core
+﻿// -----------------------------------------------------------------------
+// PlayerObject.cs: The Player
+// Author: Eric S. Policaro
+// -----------------------------------------------------------------------
+namespace Red_Headband_Prototype.Core
 {
     using System;
     using Microsoft.Xna.Framework;
     using Microsoft.Xna.Framework.Graphics;
     using TileEngine.Engine;
 
+    /// <summary>
+    /// Class used to represent a player.
+    /// </summary>
     public sealed class PlayerObject : GameObject, IResetable
     {
         public const int PLAYER_WIDTH = 21;
@@ -18,6 +25,9 @@
         private IPhysics _physics;
         private PlayerAnimation _animation;
 
+        /// <summary>
+        /// Creates a new player with the given configuration.
+        /// </summary>
         public PlayerObject(Vector2 pos, Vector2 velocity, PlayerIndex player, 
             IInput input, IPhysics physics, PlayerAnimation animation)
             : base(pos, new Rectangle((int)pos.X, (int)pos.Y, PLAYER_WIDTH, PLAYER_HEIGHT), 
@@ -41,15 +51,27 @@
         public bool IsShooting { get; set; }
         public bool GotHit { get; set; }
         public PlayerState State { get; set; }
-        public Direction XDirection { get; set; }
-        public Direction YDirection { get; set; }
         public PlayerIndex PlayerIdx { get; set; } 
+
+        /// <summary>
+        /// Gets or sets the horizontal direction the player is moving.
+        /// </summary>
+        public Direction XDirection { get; set; }
+
+        /// <summary>
+        /// Gets or sets the vertical direction the player is moving.
+        /// </summary>
+        public Direction YDirection { get; set; }
 
         public int CurrentHelth 
         { 
             get { return _currentHP; } 
         }
 
+        /// <summary>
+        /// Update the player.
+        /// </summary>
+        /// <param name="gameTime">Game time snapshot</param>
         public void Update(GameTime gameTime)
         {
             _input.Update(this, gameTime);
@@ -57,6 +79,11 @@
             _animation.Update(this, gameTime);
         }
 
+        /// <summary>
+        /// Adjust the player's health. 
+        /// A player that is hit will be shielded for 0.75s.
+        /// </summary>
+        /// <param name="amount">Amount to change the player's health, must be positive.</param>
         public void AdjustHealthFixed(int amount)
         {
             // Don't allow hits during the shield
@@ -82,7 +109,10 @@
             AdjustHealthFixed(-PLAYER_MAX_HP);
         }
 
-        public void Reset() // Brings player back to life
+        /// <summary>
+        /// Brings player back to life.
+        /// </summary>
+        public void Reset()
         {
             IsAlive = true;
             GotHit = false;
@@ -92,7 +122,12 @@
             _animation.ResetAnimations();
         }
 
-        public void Draw(SpriteBatch batch, Matrix transform)
+        /// <summary>
+        /// Draw the player.
+        /// </summary>
+        /// <param name="batch">Sprite batch used to draw</param>
+        /// <param name="transform"></param>
+        public void Draw(SpriteBatch batch)
         {
             if (Active)
             {

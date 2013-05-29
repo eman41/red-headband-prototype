@@ -252,7 +252,7 @@ namespace Red_Headband_Prototype.Core
 
         private void UpdateCamera(Camera2D camera, Vector2 playerPos)
         {
-            if (camera.hasHoldPositions() && (playerPos.X > NextHoldPosition(camera)))
+            if (camera.HasHoldPositions() && (playerPos.X > NextHoldPosition(camera)))
             {
                 int holdFactor = CreateHoldFactor(camera);
                 camera.Limits = new Rectangle(
@@ -286,8 +286,8 @@ namespace Red_Headband_Prototype.Core
             base.Draw(gameTime);
             GraphicsDevice.Clear(CurrentLevel.BackgroundColor);
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, _activeCamera.Transform);
-                CurrentLevel.Draw(_spriteBatch, _activeCamera.Transform);
-                _playerOne.Draw(_spriteBatch, _activeCamera.Transform);
+                CurrentLevel.Draw(_spriteBatch);
+                _playerOne.Draw(_spriteBatch);//, _activeCamera.Transform);
             _spriteBatch.End();
             
             _spriteBatch.Begin();

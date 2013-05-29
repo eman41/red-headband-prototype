@@ -1,4 +1,8 @@
-﻿namespace Red_Headband_Prototype.Core.GUI
+﻿// -----------------------------------------------------------------------
+// HealthBar.cs: A health bar HUD/UI component
+// Author: Eric S. Policaro
+// -----------------------------------------------------------------------
+namespace Red_Headband_Prototype.Core.GUI
 {
     using System;
     using System.Collections.Generic;
@@ -8,6 +12,9 @@
     using Microsoft.Xna.Framework.Graphics;
     using TileEngine.Engine;
 
+    /// <summary>
+    /// Class used for the player's health bar.
+    /// </summary>
     public class HealthBar : GameComponent, IResetable
     {
         private PlayerObject _player;
@@ -24,7 +31,12 @@
         private int _hpG = COLOR_MAX;
         private int _hpB = COLOR_MAX;
 
-
+        /// <summary>
+        /// Creates an instance of HealthBar.
+        /// </summary>
+        /// <param name="game">Reference to the main game object</param>
+        /// <param name="dataPath">Path to the game assets</param>
+        /// <param name="player">Player to track with the bar</param>
         public HealthBar(Game game, String dataPath, PlayerObject player)
             : base(game)
         {
@@ -35,28 +47,23 @@
                 Game.GraphicsDevice.Viewport.Height - _healthFrameRect.Height - 10);
         }
 
-        public Color HpBarColor
-        {
-            set
-            {
-                _hpColor = value;
-            }
-            get
-            {
-                return _hpColor;
-            }
-        }
-
+        /// <summary>
+        /// Update the health bar.
+        /// </summary>
         public void Update()
         {
             UpdateHealth();
         }
 
+        /// <summary>
+        /// Reset the health bar back to full.
+        /// </summary>
         public void Reset()
         {
             _healthFillRect.Width = PlayerObject.PLAYER_MAX_HP;
         }
 
+        // Health bar gets progressively more red as it empties
         private void UpdateHealth()
         {
             if (_player.IsAlive)
@@ -83,6 +90,11 @@
             _hpColor = new Color(_hpR, _hpG, _hpB);
         }
 
+        /// <summary>
+        /// Draw the health bar onto the UI.
+        /// </summary>
+        /// <param name="gameTime">Game time snapshot</param>
+        /// <param name="batch">Sprite batch used to draw the health bar</param>
         public void Draw(GameTime gameTime, SpriteBatch batch)
         {
             batch.Draw(_sheet, _healthPosition, _healthFillRect, _hpColor);

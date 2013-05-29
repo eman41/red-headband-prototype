@@ -1,4 +1,8 @@
-﻿namespace Red_Headband_Prototype.Core
+﻿// -----------------------------------------------------------------------
+// PlayerAnimation: Animation control for the player
+// Author: Eric S. Policaro
+// -----------------------------------------------------------------------
+namespace Red_Headband_Prototype.Core
 {
     using System;
     using System.Collections.Generic;
@@ -9,11 +13,19 @@
     using System.Text;
     using TileEngine.Engine;
 
+    /// <summary>
+    /// Class used to control/set the animation for the player.
+    /// </summary>
     public class PlayerAnimation : GameComponent
     {
         private Texture2D _sheet;
         private Dictionary<PlayerState, Animation> _animations;
 
+        /// <summary>
+        /// Creates a new instance of PlayerAnimation.
+        /// </summary>
+        /// <param name="game">Current game reference</param>
+        /// <param name="dataPath">Path to game assets</param>
         public PlayerAnimation(Game game, string dataPath)
             : base(game)
         {
@@ -21,6 +33,9 @@
             LoadAssets(dataPath);
         }
 
+        /// <summary>
+        /// Gets the player sprite sheet.
+        /// </summary>
         public Texture2D Sheet
         {
             get
@@ -29,8 +44,16 @@
             }
         }
 
+        /// <summary>
+        /// Gets or Sets the current animation.
+        /// </summary>
         public Animation ActiveAnimation { get; set; }
 
+        /// <summary>
+        /// Update the player's animation state.
+        /// </summary>
+        /// <param name="player">Player to update</param>
+        /// <param name="gameTime">Game time snapshot</param>
         public void Update(PlayerObject player, GameTime gameTime)
         {
             PlayerState state = PlayerState.Stand;
@@ -90,6 +113,9 @@
             ActiveAnimation.Update(gameTime);
         }
 
+        /// <summary>
+        /// Reset all animations back to their starting state.
+        /// </summary>
         public void ResetAnimations()
         {
             foreach (var animation in _animations)
@@ -98,6 +124,10 @@
             }
         }
 
+        /// <summary>
+        /// Load animation frames.
+        /// </summary>
+        /// <param name="datapath">Path to player sprite sheet.</param>
         private void LoadAssets(string datapath)
         {
             XElement decoded = XElement.Load(datapath);
@@ -126,6 +156,11 @@
             }
         }
 
+        /// <summary>
+        /// Translates the given string to the defined player state.
+        /// </summary>
+        /// <param name="name">Name of the state.</param>
+        /// <returns>A playerstate instance. Default: Stand</returns>
         public static PlayerState TypeTranslation(string name)
         {
             switch (name)
