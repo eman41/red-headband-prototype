@@ -15,6 +15,9 @@ namespace TileEngine.Engine
     using Microsoft.Xna.Framework;
     using System.Collections.Generic;
 
+    /// <summary>
+    /// Class for a standard orthographic camera.
+    /// </summary>
     public class Camera2D
     {
         private Vector2 _position;
@@ -22,6 +25,9 @@ namespace TileEngine.Engine
         private float _viewPortWidth;
         private float _viewPortHeight;
 
+        /// <summary>
+        /// Creates a new camera.
+        /// </summary>
         public Camera2D()
         {
             _zoom = 1.0f;
@@ -31,6 +37,11 @@ namespace TileEngine.Engine
             HoldPositions = new Queue<int>();
         }
 
+        /// <summary>
+        /// Create a new camera with ths specified dimensions.
+        /// </summary>
+        /// <param name="viewWidth">Width of the viewport</param>
+        /// <param name="viewHeight">Height of the viewport</param>
         public Camera2D(float viewWidth, float viewHeight) 
             : this()
         {
@@ -39,7 +50,10 @@ namespace TileEngine.Engine
             Origin = new Vector2(_viewPortWidth / 2.0f, _viewPortHeight / 2.0f);
         }
 
-        public bool hasHoldPositions()
+        /// <summary>
+        /// Check if this camera has designated hold positions.
+        /// </summary>
+        public bool HasHoldPositions()
         {
             return HoldPositions.Count > 0;
         }
@@ -51,9 +65,13 @@ namespace TileEngine.Engine
         public Vector2 Origin { get; set; }
         public Queue<int> HoldPositions { get; set;}
 
+        /// <summary>
+        /// Gets or sets the zoom level.
+        /// A negative zoom will flip the image.
+        /// </summary>
         public float Zoom
         {
-            get { return _zoom; } // Negative zoom will flip image
+            get { return _zoom; }
             set 
             { 
                 _zoom = value; 
@@ -73,6 +91,9 @@ namespace TileEngine.Engine
             }
         }
 
+        /// <summary>
+        /// Gets the matrix that creates the projection for the camera.
+        /// </summary>
         public Matrix Transform
         {
             get
@@ -88,7 +109,9 @@ namespace TileEngine.Engine
             }
         }  
 
-        // Get or set the position taking into account the camera lock
+        /// <summary>
+        /// Get or set the camera position taking into account the camera lock.
+        /// </summary>
         public Vector2 FocusVector
         {
             get { return _position; }
@@ -132,6 +155,9 @@ namespace TileEngine.Engine
         }
     }
 
+    /// <summary>
+    /// Direction the camera is locked.
+    /// </summary>
     public enum CameraLock
     {
         None, Horizontal, Vertical, Both

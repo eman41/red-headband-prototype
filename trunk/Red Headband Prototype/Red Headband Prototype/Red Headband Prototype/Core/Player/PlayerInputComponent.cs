@@ -220,6 +220,9 @@ namespace Red_Headband_Prototype.Core
         }
     }
 
+    /// <summary>
+    /// Direction a player can be moving.
+    /// </summary>
     public enum Direction
     {
         None, Left, Right, Up, Down

@@ -98,7 +98,7 @@
     <Compile Include="Engine\EngineUtility.cs" />
     <Compile Include="Engine\GameObject.cs" />
     <Compile Include="Engine\IResetable.cs" />
-    <Compile Include="Engine\Level.cs" />
+    <Compile Include="Engine\GameMap.cs" />
     <Compile Include="Engine\AI\Sensor.cs" />
     <Compile Include="Engine\Platforms\MathUtilities.cs" />
     <Compile Include="Engine\Platforms\MovingPlatform.cs" />

@@ -1,9 +1,7 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="IPhysicsEngine.cs" company="Me">
+// IPhysicsEngine.cs: Interface defining a physics component.
 // Author: Eric S. Policaro
-// </copyright>
 // -----------------------------------------------------------------------
-
 namespace Red_Headband_Prototype.Core
 {
     using TileEngine.Engine;

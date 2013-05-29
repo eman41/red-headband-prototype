@@ -44,11 +44,11 @@ namespace TileEngine.Engine
 
             _levelName = levelName;
             _tileSheet = tileSheet;
-            readLevelFile(path);
+            ReadLevelFile(path);
             LadderBounds = AssembleLadders(saveLadders, TILE_SIZE);
         }
         
-        private void readLevelFile(String path)
+        private void ReadLevelFile(String path)
         {
             using (StreamReader reader = new StreamReader(path))
             {
@@ -59,23 +59,22 @@ namespace TileEngine.Engine
                     string[] tokens = reader.ReadLine().Split(',');
                     if (first)
                     {
-                        readSetupLine(first, tokens);
+                        ReadSetupLine(first, tokens);
                         first = false;
                     }
                     else
                     {
                         int x = Convert.ToInt32(tokens[0].Trim());
                         int y = Convert.ToInt32(tokens[1].Trim());
-                        TileObject tile = createNewTile(x, y, tokens);
+                        TileObject tile = CreateNewTile(x, y, tokens);
                         _tileMap[y, x] = tile;
-                        handleSpecialTile(tile);
+                        HandleSpecialTile(tile);
                     }
                 }
-                
             }
         }
 
-        private void readSetupLine(bool first, string[] tokens)
+        private void ReadSetupLine(bool first, string[] tokens)
         {
             LevelWidth = Convert.ToInt32(tokens[1]) / TILE_SIZE;
             LevelHeight = Convert.ToInt32(tokens[2]) / TILE_SIZE;
@@ -108,13 +107,13 @@ namespace TileEngine.Engine
             }
         }
 
-        private TileObject createNewTile(int posX, int posY, string[] tokens)
+        private TileObject CreateNewTile(int posX, int posY, string[] tokens)
         {
             int TYPE_INDEX = 2;
-            string tileName = getTileName(tokens);
-            float rotation = getRotationAsRads(tokens);
-            Vector2 origin = getAdjustedOrigin(rotation);
-            Rectangle draw = getDrawRect(tileName);
+            string tileName = GetTileName(tokens);
+            float rotation = GetRotationAsRads(tokens);
+            Vector2 origin = GetAdjustedOrigin(rotation);
+            Rectangle draw = GetDrawRect(tileName);
             TileType type = TileObject.TypeTranslation(tokens[TYPE_INDEX].Trim());
 
             TileObject node = new TileObject(
@@ -127,13 +126,13 @@ namespace TileEngine.Engine
             return node;
         }
         
-        private String getTileName(string[] tokens)
+        private String GetTileName(string[] tokens)
         {
             int NAME_INDEX = 4;
             return tokens[NAME_INDEX].Trim();
         }
 
-        private float getRotationAsRads(string[] tokens)
+        private float GetRotationAsRads(string[] tokens)
         {
             int ROTA_INDEX = 3;
             float rotation = Convert.ToInt32(tokens[ROTA_INDEX].Trim());
@@ -141,7 +140,7 @@ namespace TileEngine.Engine
         }
 
         // Move origin to rotate tile around its center
-        private Vector2 getAdjustedOrigin(float rotation)
+        private Vector2 GetAdjustedOrigin(float rotation)
         {
             Vector2 origin = Vector2.Zero;
             if (rotation > 0)
@@ -152,7 +151,7 @@ namespace TileEngine.Engine
             return origin;
         }
 
-        private Rectangle getDrawRect(String tileName)
+        private Rectangle GetDrawRect(String tileName)
         {
             if (!tileName.Contains("Tile"))
             {
@@ -169,7 +168,7 @@ namespace TileEngine.Engine
             }
         }
 
-        private void handleSpecialTile(TileObject tile)
+        private void HandleSpecialTile(TileObject tile)
         {
             if (TileType.Ladder == tile.Type)
             {
@@ -228,9 +227,20 @@ namespace TileEngine.Engine
         public float Gravity { get; set; }
         public Color BackgroundColor { get; set; }
         public Vector2 PlayerStart { get; set; }
+
+        /// <summary>
+        /// Gets or sets the level width in tiles.
+        /// </summary>
         public int LevelWidth { get; set; }
+
+        /// <summary>
+        /// Gets or sets the level height in tiles.
+        /// </summary>
         public int LevelHeight { get; set; }
 
+        /// <summary>
+        /// Gets the name of the level.
+        /// </summary>
         public string LevelName
         {
             private set
@@ -244,6 +254,9 @@ namespace TileEngine.Engine
             }
         }
 
+        /// <summary>
+        /// Gets the tile map.
+        /// </summary>
         public TileObject[,] LevelTiles
         {
             get
@@ -252,16 +265,25 @@ namespace TileEngine.Engine
             }
         }
 
+        /// <summary>
+        /// Level width in pixels.
+        /// </summary>
         public float RealLevelWidth
         {
             get { return LevelWidth * TILE_SIZE; }
         }
 
+        /// <summary>
+        /// Level height in pixels.
+        /// </summary>
         public float RealLevelHeight
         {
             get { return LevelHeight * TILE_SIZE; }
         }
 
+        /// <summary>
+        /// Check if the given body is colliding with any ladders.
+        /// </summary>
         public bool LadderCollision(Rectangle body)
         {
             foreach (Rectangle rect in LadderBounds)
@@ -276,6 +298,9 @@ namespace TileEngine.Engine
             return false;
         }
 
+        /// <summary>
+        /// Check if the given body is colliding with any kill platforms.
+        /// </summary>
         public bool KillCollision(Rectangle body)
         {
             foreach (var rect in KillRects)
@@ -287,12 +312,19 @@ namespace TileEngine.Engine
             return false;
         }
 
+        /// <summary>
+        /// Check if the given body is completely above the currently avtive ladder.
+        /// </summary>
         public bool AboveLadder(GameObject body)
         {
             return body.BoundingRect.Top < ActiveLadder.Top &&
                     body.YRectAlign(ActiveLadder);
         }
 
+        /// <summary>
+        /// Update the platforms in the level.
+        /// </summary>
+        /// <param name="gameTime">Game time snapshot</param>
         public void Update(GameTime gameTime)
         {
             foreach (var platform in Platforms)
@@ -301,13 +333,18 @@ namespace TileEngine.Engine
             }
         }
 
-        public void Draw(SpriteBatch batch, Matrix transform)
+        /// <summary>
+        /// Draw the level.
+        /// </summary>
+        /// <param name="batch"></param>
+        /// <param name="transform"></param>
+        public void Draw(SpriteBatch batch)
         {
-            drawPlatforms(batch);
-            drawTileMap(batch);
+            DrawPlatforms(batch);
+            DrawTileMap(batch);
         }
 
-        private void drawPlatforms(SpriteBatch batch)
+        private void DrawPlatforms(SpriteBatch batch)
         {
             foreach (var platform in Platforms)
             {
@@ -315,7 +352,7 @@ namespace TileEngine.Engine
             }
         }
 
-        private void drawTileMap(SpriteBatch batch)
+        private void DrawTileMap(SpriteBatch batch)
         {
             for (int y = 0; y < LevelHeight; y++)
             {

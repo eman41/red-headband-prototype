@@ -4,9 +4,6 @@
 // -----------------------------------------------------------------------
 namespace TileEngine.Engine
 {
-    /// <summary>
-    /// Interface used to define an object that can be reset back to an initial state.
-    /// </summary>
     public interface IResetable
     {
         /// <summary>
