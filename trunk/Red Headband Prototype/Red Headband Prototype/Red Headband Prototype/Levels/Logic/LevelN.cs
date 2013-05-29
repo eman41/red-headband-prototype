@@ -1,4 +1,8 @@
-﻿namespace Red_Headband_Prototype.Levels.Logic
+﻿// -----------------------------------------------------------------------
+// LevelN.cs: Scripting for LevelN
+// Author: Eric S. Policaro
+// -----------------------------------------------------------------------
+namespace Red_Headband_Prototype.Levels.Logic
 {
     using System;
     using Red_Headband_Prototype.Core;

@@ -1,4 +1,8 @@
-﻿namespace Red_Headband_Prototype.Core
+﻿// -----------------------------------------------------------------------
+// DemoInputComponent.cs: Trial input implementation for running a game demo.
+// Author: Eric S. Policaro
+// -----------------------------------------------------------------------
+namespace Red_Headband_Prototype.Core
 {
     using Microsoft.Xna.Framework;
     using TileEngine.Engine;
