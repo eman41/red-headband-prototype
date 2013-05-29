@@ -9,7 +9,7 @@
     using TileEngine.Engine.AI;
     using TileEngine.Collision;
 
-    public class LevelN : ILevel
+    public class LevelN : ILevelScript
     {
         private GameMap _gameMap;
         
