@@ -266,7 +266,7 @@ namespace TileEngine.Engine
         }
 
         /// <summary>
-        /// Level width in pixels.
+        /// Gets the level width in pixels.
         /// </summary>
         public float RealLevelWidth
         {
