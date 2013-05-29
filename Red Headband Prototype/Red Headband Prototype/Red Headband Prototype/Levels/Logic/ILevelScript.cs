@@ -7,7 +7,7 @@
     using TileEngine.Engine;
     using Red_Headband_Prototype.Core;
 
-    public interface ILevel
+    public interface ILevelScript
     {
         GameMap GetGameMap();
 

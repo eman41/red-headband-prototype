@@ -116,7 +116,7 @@
     <Compile Include="Core\Player\PlayerAnimation.cs" />
     <Compile Include="Core\Player\PlayerInputComponent.cs" />
     <Compile Include="Core\Player\PlayerObject.cs" />
-    <Compile Include="Levels\Logic\ILevel.cs" />
+    <Compile Include="Levels\Logic\ILevelScript.cs" />
     <Compile Include="Levels\Logic\KillPlatform.cs" />
     <Compile Include="Levels\Logic\LevelN.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

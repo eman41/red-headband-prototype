@@ -26,7 +26,9 @@ namespace TileEngine.Engine.Platforms
         /// </summary>
         /// <param name="texture">Texture sheet for platform objects.</param>
         /// <param name="control">Controller for this platform</param>
-        /// <param name="draw">Draw rectangle for the texture sheet (also used in bounding box calculations).</param>
+        /// <param name="draw">
+        /// Draw rectangle for the texture sheet (also used in bounding box calculations).
+        /// </param>
         public MovingPlatform(Texture2D texture, PlatformController control, Rectangle draw)
         {
             _texture = texture;

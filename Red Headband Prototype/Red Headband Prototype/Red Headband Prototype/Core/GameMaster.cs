@@ -42,12 +42,12 @@ namespace Red_Headband_Prototype.Core
         private static PlayerObject _playerOne;
 
         /// <summary>Level data reference</summary>
-        private static ILevel _level;
+        private static ILevelScript _level;
 
         /// <summary>Displays the hud gui.</summary>
         private HealthBar _hudComponent;
 
-        private Dictionary<string, ILevel> _levelCache = new Dictionary<string,ILevel>(); 
+        private Dictionary<string, ILevelScript> _levelCache = new Dictionary<string,ILevelScript>(); 
 
         SpriteFont debugFont;
 

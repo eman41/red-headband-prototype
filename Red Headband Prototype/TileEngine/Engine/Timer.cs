@@ -1,12 +1,14 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="Timer.cs" company="Me" />
+// Timer.cs: Tracks a countdown and resets automatically.
 // Author: Eric S. Policaro
-// Tracks a countdown and resets automatically.
 // -----------------------------------------------------------------------
 namespace TileEngine.Engine
 {
     using System;
 
+    /// <summary>
+    /// Tracks a countdown and resets automatically.
+    /// </summary>
     public class Timer : IResetable
     {
         private TimeSpan _timeLimit;

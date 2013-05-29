@@ -24,7 +24,7 @@ namespace Red_Headband_Prototype.Core
         /// <summary>
         /// Creates a new PlayerPhysics class.
         /// </summary>
-        /// <param name="level">Current level</param>
+        /// <param name="level">Current level</param
         public PlayerPhysics(GameMap level)
         {
             _collision = new Collision(level);
@@ -50,9 +50,9 @@ namespace Red_Headband_Prototype.Core
             }
             else
             {
-                NormalRules(player);   
+                NormalRules(player);
             }
-            
+
             _collision.UpdateScanBounds(player.Coords, SCAN_DISTANCE);
         }
 
@@ -109,8 +109,12 @@ namespace Red_Headband_Prototype.Core
             }
             else if (falling == Colliding.FromBottom)
             {
-                // Player is crushed by a platform
-                CrushPlayer(player);
+                player.IsJumping = false;
+                player.IsWallJumping = false;
+                if (player.OnPlatform)
+                {
+                    player.KillPlayer();
+                }
             }
 
             foreach (Rectangle rect in _collision.MapLevel.LadderBounds)
@@ -120,7 +124,7 @@ namespace Red_Headband_Prototype.Core
                     if (_collision.DetectAndResolveCollision(player, rect, Axis.Y_AXIS) == Colliding.FromTop)
                     {
                         player.Velocity.Y = 0f;
-                        result =  true;
+                        result = true;
                     }
                 }
             }
@@ -131,70 +135,50 @@ namespace Red_Headband_Prototype.Core
         // Check for collisions against platforms: moving and killing
         private bool CheckPlatforms(PlayerObject player, Axis axis)
         {
-            Colliding collide = _collision.CheckPlatformCollision(player, axis);
+            Colliding collision = _collision.CheckPlatformCollision(player, axis);
 
-            if (collide != Colliding.None)
+            if (collision != Colliding.None)
             {
                 if (_collision.LastPlatform is IKillRect)
                 {
                     IKillRect killPlat = (IKillRect)_collision.LastPlatform;
-                    collide = (axis == Axis.X_AXIS)
-                        ? _collision.XDirection(player.BoundingRect, _collision.LastPlatform.BoundingRect) 
-                        : _collision.YDirection(player.BoundingRect, _collision.LastPlatform.BoundingRect);
-                    if ((killPlat.GetKillDirection() & collide) == collide)
-                    {
+
+                    collision = axis == Axis.X_AXIS ? _collision.XDirection(player.BoundingRect, _collision.LastPlatform.BoundingRect) :
+                        _collision.YDirection(player.BoundingRect, _collision.LastPlatform.BoundingRect);
+                    if ((killPlat.GetKillDirection() & collision) == collision)
                         player.KillPlayer();
-                    }
                 }
 
                 if (player.IsAlive)
                 {
-                    _collision.ResolveCollision(player, _collision.LastPlatform.BoundingRect, collide);
-                    ResolvePlatformCollision(player, collide);
+                    _collision.ResolveCollision(player, _collision.LastPlatform.BoundingRect, collision);
+
+                    switch (collision)
+                    {
+                        case Colliding.FromRight:
+                        case Colliding.FromLeft:
+                            return true;
+                        case Colliding.FromTop:
+                            _collision.LastPlatform.WakeUp();
+                            player.Velocity = _collision.LastPlatform.Velocity;
+                            player.Position += player.Velocity;
+                            player.OnFloor = false;
+                            player.OnLadder = false;
+                            return true;
+                        case Colliding.FromBottom:
+                            player.IsJumping = false;
+                            player.IsWallJumping = false;
+                            player.OnLadder = false;
+                            if (player.OnFloor)
+                            {
+                                player.KillPlayer();
+                            }
+                            break;
+                    }
                 }
             }
 
             return false;
-        }
-
-        private bool ResolvePlatformCollision(PlayerObject player, Colliding collide) 
-        {
-            switch (collide)
-            {
-                case Colliding.FromRight:
-                case Colliding.FromLeft:
-                    return true;
-
-                case Colliding.FromTop:
-                    _collision.LastPlatform.WakeUp();
-                    AlignPlayerToPlatform(player);
-                    return true;
-
-                // Player is crushed by a platform
-                case Colliding.FromBottom:
-                    CrushPlayer(player);
-                    return false;
-            }
-            return false;
-        }
-
-        private void AlignPlayerToPlatform(PlayerObject player) 
-        {
-            player.Velocity = _collision.LastPlatform.Velocity;
-            player.Position += player.Velocity;
-            player.OnFloor = false;
-            player.OnLadder = false;
-        }
-
-        private void CrushPlayer(PlayerObject player)
-        {
-            player.IsJumping = false;
-            player.IsWallJumping = false;
-            player.OnLadder = false;
-            if (player.OnFloor)
-            {
-                player.KillPlayer();
-            }
         }
 
         private bool CheckEnterLadder(PlayerObject player)
@@ -219,27 +203,30 @@ namespace Red_Headband_Prototype.Core
 
         private bool IsClimbingDown(PlayerObject player, ref Rectangle temp)
         {
-            return _collision.MapLevel.LadderCollision(temp) && _collision.MapLevel.AboveLadder(player);
+            return _collision.MapLevel.LadderCollision(temp) 
+                && _collision.MapLevel.AboveLadder(player);
         }
 
         private bool IsClimbingUp(PlayerObject player)
         {
-            return player.YDirection == Direction.Up && _collision.MapLevel.LadderCollision(player.BoundingRect);
+            return player.YDirection == Direction.Up 
+                && _collision.MapLevel.LadderCollision(player.BoundingRect);
         }
 
         private bool CheckSliding(PlayerObject player, Colliding xAxis)
         {
+            bool sliding = false;
             Rectangle leftTemp = new Rectangle(
-                (int)player.Position.X - 1, 
-                (int)player.Position.Y, 
-                player.BoundingRect.Width, 
+                (int)player.Position.X - 1,
+                (int)player.Position.Y,
+                player.BoundingRect.Width,
                 player.BoundingRect.Height);
             Rectangle rightTemp = new Rectangle(
-                (int)player.Position.X + 1, 
-                (int)player.Position.Y, 
-                player.BoundingRect.Width, 
+                (int)player.Position.X + 1,
+                (int)player.Position.Y,
+                player.BoundingRect.Width,
                 player.BoundingRect.Height);
-            
+
             if (_collision.CheckLevelCollision(leftTemp, Axis.X_AXIS) == Colliding.FromRight)
             {
                 if (!player.OnFloor)
@@ -247,7 +234,7 @@ namespace Red_Headband_Prototype.Core
                     player.IsFacingLeft = true;
                 }
                 player.State = PlayerState.WallSlideL;
-                return true;
+                sliding = true;
             }
             else if (_collision.CheckLevelCollision(rightTemp, Axis.X_AXIS) == Colliding.FromLeft)
             {
@@ -256,10 +243,14 @@ namespace Red_Headband_Prototype.Core
                     player.IsFacingLeft = false;
                 }
                 player.State = PlayerState.WallSlideR;
-                return true;
+                sliding = true;
+            }
+            else
+            {
+                sliding = false;
             }
 
-            return false;
+            return sliding;
         }
     }
 }

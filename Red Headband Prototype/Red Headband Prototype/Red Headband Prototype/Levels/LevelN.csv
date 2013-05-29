@@ -1,4 +1,4 @@
-C:\Users\Eric\Documents\Visual Studio 2010\Projects\Red Headband Prototype\Red Headband Prototype\Red Headband PrototypeContent\TileSets\world-tiles-vert.png,3840,1056,32,48;48;48,LevelN
+C:\Users\Eric\Google Drive\Projects\Red Headband Prototype\Red Headband Prototype\Red Headband PrototypeContent\TileSets\world-tiles-vert.png,3840,1056,32,48;48;48,LevelN
 0, 0, Flavor, 0, Tile 10 
 1, 0, Flavor, 0, Tile 10 
 2, 0, Flavor, 0, Tile 10 
@@ -558,7 +558,7 @@ C:\Users\Eric\Documents\Visual Studio 2010\Projects\Red Headband Prototype\Red H
 35, 8, Flavor, 0, Tile 10 
 36, 8, Flavor, 0, Tile 10 
 37, 8, Flavor, 0, Tile 10 
-38, 8, Ladder, 0, Tile 21 
+38, 8, Flavor, 0, Tile 10 
 39, 8, Flavor, 0, Tile 10 
 40, 8, Flavor, 0, Tile 10 
 41, 8, Flavor, 0, Tile 10 
@@ -628,7 +628,7 @@ C:\Users\Eric\Documents\Visual Studio 2010\Projects\Red Headband Prototype\Red H
 35, 9, Flavor, 0, Tile 10 
 36, 9, Flavor, 0, Tile 10 
 37, 9, Flavor, 0, Tile 10 
-38, 9, Ladder, 0, Tile 21 
+38, 9, Flavor, 0, Tile 10 
 39, 9, Flavor, 0, Tile 10 
 40, 9, Flavor, 0, Tile 10 
 41, 9, Tile, 0, Tile 11 
@@ -689,7 +689,7 @@ C:\Users\Eric\Documents\Visual Studio 2010\Projects\Red Headband Prototype\Red H
 35, 10, Tile, 0, Tile 14 
 36, 10, Tile, 0, Tile 14 
 37, 10, Tile, 0, Tile 14 
-38, 10, Ladder, 0, Tile 21 
+38, 10, Tile, 0, Tile 14 
 39, 10, Tile, 0, Tile 14 
 40, 10, Tile, 0, Tile 14 
 41, 10, Tile, 0, Tile 1 
